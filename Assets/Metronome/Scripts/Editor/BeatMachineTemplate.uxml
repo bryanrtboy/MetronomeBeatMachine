@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:VisualElement name="Data">
+        <Style src="BeatMachineStyles.uss" />
+        <uie:IntegerField label="Pattern Count" value="2" name="PatternCount" binding-path="m_patternCount" view-data-key="p1" />
+        <uie:IntegerField label="Measure Count" value="3" name="Count" binding-path="m_measureCount" view-data-key="p2" />
+        <uie:IntegerField label="Beats per Measure" value="4" name="Beats" binding-path="m_beatsPerMeasure" view-data-key="p3" />
+    </ui:VisualElement>
+</ui:UXML>
