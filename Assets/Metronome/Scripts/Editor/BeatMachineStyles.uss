@@ -43,3 +43,20 @@
     padding-top: 5px;
     padding-bottom: 5px;
 }
+
+.unity-label {
+    width: auto;
+    max-width: 140px;
+    min-width: 30px;
+    margin-right: 5px;
+}
+
+#unity-text-input {
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 0;
+    padding-right: 0;
+    max-width: 10px;
+    min-width: 20px;
+    -unity-text-align: upper-center;
+}
