@@ -326,8 +326,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_patternCount: 4
-  m_beatsPerMeasure: 6
-  m_measureCount: 4
+  m_beatsPerMeasure: 4
+  m_measureCount: 6
 --- !u!4 &1875294568
 Transform:
   m_ObjectHideFlags: 0

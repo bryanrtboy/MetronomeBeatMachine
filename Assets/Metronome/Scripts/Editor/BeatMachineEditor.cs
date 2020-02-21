@@ -17,6 +17,7 @@ public class BeatMachineEditor : Editor
     private VisualTreeAsset _VisualTree;
 
     private List<Editor> objectPreviewEditors;
+    Button refresh;
 
     public void OnEnable()
     {
@@ -38,11 +39,12 @@ public class BeatMachineEditor : Editor
     void SetupInts(IntegerField textField)
     {
         //Set up events here to set the Metronome time signature...
-        Debug.Log("Found " + textField.label + textField.value);
+        //        Debug.Log("Found " + textField.label + textField.value);
     }
 
-    public override VisualElement CreateInspectorGUI()
+    public void MakeInspectorTree()
     {
+
         //Clear the visual element
         _RootElement.Clear();
 
@@ -50,21 +52,31 @@ public class BeatMachineEditor : Editor
         _VisualTree.CloneTree(_RootElement);
 
 
-
-        var refresh = new Button() { text = "Update Beat Pattern Count" };
-        refresh.tooltip = "This will Erase current patterns!";
-        refresh.clickable.clicked += () => CreateInspectorGUI();
-        refresh.AddToClassList("button");
-
-        _RootElement.Add(refresh);
-
         for (int i = 0; i < _spawner.m_patternCount; i++)
         {
             MakeBeatPattern(i);
         }
 
-        var integerFields = _RootElement.Query<IntegerField>();
-        integerFields.ForEach(SetupInts);
+        if (refresh != null)
+            _RootElement.Add(refresh);
+    }
+
+    public override VisualElement CreateInspectorGUI()
+    {
+
+
+        if (refresh == null)
+        {
+            refresh = new Button() { text = "Update Beat Pattern Count" };
+            refresh.tooltip = "This will Erase current patterns!";
+            refresh.clickable.clicked += () => MakeInspectorTree();
+            refresh.AddToClassList("button");
+
+            _RootElement.Add(refresh);
+        }
+
+        MakeInspectorTree();
+
 
         return _RootElement;
     }
