@@ -127,7 +127,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59388d5bcb71841a59c7e2a4bce03034, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_vfx: {fileID: 0}
+  m_vfx: {fileID: 3759573783623521987}
   m_beats: BeatParticles
   m_downbeat: DownBeatParticles
   m_playOnDownBeat: 1

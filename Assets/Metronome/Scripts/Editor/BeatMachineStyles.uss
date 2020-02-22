@@ -44,13 +44,6 @@
     padding-bottom: 5px;
 }
 
-.unity-label {
-    width: auto;
-    max-width: 140px;
-    min-width: 30px;
-    margin-right: 5px;
-}
-
 #unity-text-input {
     margin-left: 0;
     margin-right: 0;

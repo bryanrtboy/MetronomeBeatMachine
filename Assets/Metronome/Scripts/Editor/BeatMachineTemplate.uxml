@@ -1,8 +1,7 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
-    <ui:VisualElement name="Data" style="flex-direction: row; flex-wrap: wrap;">
+    <ui:VisualElement name="Data" style="flex-direction: column; flex-wrap: no-wrap;">
         <Style src="BeatMachineStyles.uss" />
-        <uie:IntegerField label="Number of Patterns" value="2" name="PatternCount" binding-path="m_patternCount" view-data-key="p1" class="label" style="flex-shrink: 0;" />
-        <uie:IntegerField label="Measures" value="3" name="Count" binding-path="m_measureCount" view-data-key="p2" class="label" />
-        <uie:IntegerField label="Beats" value="4" name="Beats" binding-path="m_beatsPerMeasure" view-data-key="p3" class="label" />
+        <uie:IntegerField label="Pattern Count" value="2" name="PatternCount" binding-path="m_patternCount" view-data-key="p1" class="label" style="flex-shrink: 0;" />
+        <uie:IntegerField label="Loop Length" value="3" name="Count" binding-path="m_measureCount" view-data-key="p2" class="label" />
     </ui:VisualElement>
 </ui:UXML>

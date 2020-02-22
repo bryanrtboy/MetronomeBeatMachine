@@ -9,17 +9,22 @@ using UnityEditor.UIElements;
 [CustomEditor(typeof(BeatMachine))]
 public class BeatMachineEditor : Editor
 {
+
     private BeatMachine _spawner;
     private VisualElement _RootElement;
     private VisualTreeAsset _VisualTree;
     private VisualElement _BeatPattern;
 
     private List<Editor> objectPreviewEditors;
-    Button refresh;
+    private Button refresh;
+    private Button sendPatterns;
+    private Metronome m_metronome;
 
     public void OnEnable()
     {
+
         _spawner = (BeatMachine)target;
+        m_metronome = _spawner.transform.GetComponent<Metronome>();
 
         _RootElement = new VisualElement();
 
@@ -46,34 +51,70 @@ public class BeatMachineEditor : Editor
         refresh.AddToClassList("button");
 
         _BeatPattern = new VisualElement();
+        _BeatPattern.name = "BeatPatterns";
+
         for (int i = 0; i < _spawner.m_patternCount; i++)
-        {
             MakeBeatPattern(i);
-        }
+
 
         _RootElement.Add(refresh);
 
         _RootElement.Add(_BeatPattern);
 
+        sendPatterns = new Button() { text = "Send Patterns to Audio" };
+        sendPatterns.tooltip = "Send this pattern to all the sounds";
+        sendPatterns.clickable.clicked += () => GetAndSendPatterns();
+        sendPatterns.AddToClassList("button");
+
+        _RootElement.Add(sendPatterns);
+
         return _RootElement;
+    }
+
+    void GetAndSendPatterns()
+    {
+        //Poll the UI for pattern containers
+        var toggleContainers = _BeatPattern.Query<VisualElement>().Class("toggle-container").ToList();
+
+        //each toggle container is a list of booleans, gather and send them to the audio files
+        foreach (VisualElement ve in toggleContainers)
+        {
+            var bools = ve.Query<Toggle>().ToList();
+
+            List<bool> list = new List<bool>();
+            foreach (Toggle t in bools)
+            {
+                list.Add(t.value);
+            }
+
+            BeatPattern beatPattern = new BeatPattern();
+            beatPattern.m_beatID = System.Convert.ToInt32(ve.name);
+            beatPattern.m_beatPattern = list;
+
+            _spawner.DispatchPatterns(beatPattern);
+        }
+
+
     }
 
     void MakeBeatPattern(int num)
     {
-        num++;
 
-        var name = new Label(text: "Beat Pattern " + num.ToString());
+
+        var name = new Label(text: num.ToString());
         _BeatPattern.Add(name);
 
         VisualElement visualElement = new VisualElement();
         visualElement.AddToClassList("toggle-container");
+        visualElement.name = num.ToString();
+
 
         for (int j = 0; j < _spawner.m_measureCount; j++)
         {
-            for (int i = 0; i < _spawner.m_beatsPerMeasure; i++)
+            for (int i = 0; i < m_metronome.signatureHi; i++)
             {
                 var toggle = new Toggle();
-                if (i == _spawner.m_beatsPerMeasure - 1 && j < _spawner.m_measureCount - 1)
+                if (i == m_metronome.signatureHi - 1 && j < _spawner.m_measureCount - 1)
                     toggle.AddToClassList("lastbeat");
                 else
                     toggle.AddToClassList("beat");
@@ -87,8 +128,12 @@ public class BeatMachineEditor : Editor
                 visualElement.Add(toggle);
 
             }
+
+
         }
         _BeatPattern.Add(visualElement);
+
+
 
     }
 

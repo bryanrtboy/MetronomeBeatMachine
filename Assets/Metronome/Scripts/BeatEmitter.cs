@@ -6,13 +6,18 @@ using UnityEngine;
 public class BeatEmitter : MonoBehaviour
 {
     public ParticleSystem m_vfx;
-    public string m_beats = "BeatParticles";
-    public string m_downbeat = "DownBeatParticles";
     public bool m_playOnDownBeat = true;
     public AudioClip m_clip;
     public bool m_useRandom = true;
     [Range(0.01f, .99f)]
     public float m_randomChance = .5f;
+    public int m_patternID = 0;
+
+    List<bool> m_pattern;
+
+    //Use these strings to call VFX Graph System Properties
+    //public string m_beats = "BeatParticles";
+    //public string m_downbeat = "DownBeatParticles";
 
     Light m_light;
 
@@ -20,12 +25,14 @@ public class BeatEmitter : MonoBehaviour
     {
         m_vfx = this.GetComponentInChildren<ParticleSystem>();
         m_light = this.GetComponentInChildren<Light>();
+        m_pattern = new List<bool>();
     }
 
     private void OnEnable()
     {
         Metronome.OnBeat += Beat;
         Metronome.OnDownBeat += DownBeat;
+        BeatMachine.OnPatternChange += UpdatePattern;
 
         StartCoroutine(ResetBurst());
     }
@@ -34,6 +41,7 @@ public class BeatEmitter : MonoBehaviour
     {
         Metronome.OnBeat -= Beat;
         Metronome.OnDownBeat -= DownBeat;
+        BeatMachine.OnPatternChange -= UpdatePattern;
     }
 
     private void Update()
@@ -44,13 +52,22 @@ public class BeatEmitter : MonoBehaviour
 
     void Beat()
     {
+        //If we are using randomness, do stuff here
         if (m_useRandom && Random.Range(0.0f, 1.0f) > m_randomChance)
             return;
+
+        //If we have a beat pattern, do stuff here (makes sense to NOT use randomness if we are using patterns, but YMMV
+        if (m_pattern.Count > 0 && !ShallWePlay())
+        {
+            return;
+        }
 
         AudioSource.PlayClipAtPoint(m_clip, this.transform.position, .5f);
 
         m_vfx.Emit(100);
-        StartCoroutine(ResetBurst());
+
+        //m_vfx.SetInt(m_downbeat, 300);
+        //StartCoroutine(ResetBurst());
 
         LightFlash(.5f, new Color(.1f, .1f, 1f));
 
@@ -64,17 +81,23 @@ public class BeatEmitter : MonoBehaviour
         if (m_useRandom && Random.Range(0.0f, 1.0f) > m_randomChance)
             return;
 
+        if (m_pattern.Count > 0 && !ShallWePlay())
+            return;
+
         AudioSource.PlayClipAtPoint(m_clip, this.transform.position, 1f);
         m_vfx.Emit(1000);
-        StartCoroutine(ResetBurst());
+
+        //m_vfx.SetInt(m_downbeat, 3000);
+        //StartCoroutine(ResetBurst());
 
         LightFlash(1f, Color.white);
     }
 
-
     IEnumerator ResetBurst()
     {
         yield return new WaitForEndOfFrame();
+
+        //If using a VFX Graph, reset the appropriate system
         //m_vfx.SetInt(m_beats, 0);
         //m_vfx.SetInt(m_downbeat, 0);
     }
@@ -87,4 +110,26 @@ public class BeatEmitter : MonoBehaviour
         m_light.intensity = _intensity;
         m_light.color = _color;
     }
+
+    void UpdatePattern(BeatPattern bp)
+    {
+        if (bp.m_beatID == m_patternID)
+        {
+            m_pattern = bp.m_beatPattern;
+        }
+    }
+
+    bool ShallWePlay()
+    {
+        bool shouldPlayOnThisBeat = m_pattern[BeatMachine.Instance.m_currentBeat];
+        return shouldPlayOnThisBeat;
+    }
+
+}
+
+[System.Serializable]
+public class BeatPattern
+{
+    public int m_beatID = 0;
+    public List<bool> m_beatPattern;
 }
