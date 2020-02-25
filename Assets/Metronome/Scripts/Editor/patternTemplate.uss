@@ -1,0 +1,9 @@
+.pattern-id {
+    flex-direction: row;
+    padding-left: 3px;
+    padding-right: 5px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    width: auto;
+    -unity-text-align: middle-left;
+}

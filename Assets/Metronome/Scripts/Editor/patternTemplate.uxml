@@ -1,0 +1,7 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:VisualElement style="flex-direction: row; flex-grow: 0; margin-top: 0; margin-left: 0;">
+        <Style src="patternTemplate.uss" />
+        <ui:Label text="pattern: " style="min-width: auto; padding-left: 0; padding-right: 0; -unity-text-align: middle-left;" />
+        <ui:Label text="0&#x9;" class="pattern-id" style="max-width: none; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-right: 0; padding-left: 0; min-width: 20px;" />
+    </ui:VisualElement>
+</ui:UXML>

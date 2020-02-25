@@ -1,0 +1,9 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:VisualElement name="SaveControls" class="control-container">
+        <Style src="ControlAreaTemplate.uss" />
+        <ui:Button text="Reset" name="Reset" view-data-key="reset" />
+        <ui:Button text="Save Preset" name="Save" view-data-key="save" />
+        <ui:TextField picking-mode="Ignore" value="settings" text="settings" name="SaveAs" binding-path="m_saveAs" view-data-key="saveAs" class="label" style="max-width: none; min-width: 175px;" />
+        <ui:Label text="Load Preset" name="Load" class="load-label" />
+    </ui:VisualElement>
+</ui:UXML>

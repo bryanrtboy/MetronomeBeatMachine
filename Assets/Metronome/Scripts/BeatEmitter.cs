@@ -1,4 +1,12 @@
-﻿using System.Collections;
+﻿//Bryan Leister Feb. 2020
+//This script is attached to each prefab that we use to generate our notes
+//It needs the note:  m_clip
+//And subscribes to the Beat and DownBeat events
+//The scene must include a Metronome and a BeatMachine
+//THe BeatMachine generates the notes and tells them when a new
+//beat pattern exists.
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -125,11 +133,4 @@ public class BeatEmitter : MonoBehaviour
         return shouldPlayOnThisBeat;
     }
 
-}
-
-[System.Serializable]
-public class BeatPattern
-{
-    public int m_beatID = 0;
-    public List<bool> m_beatPattern;
 }
