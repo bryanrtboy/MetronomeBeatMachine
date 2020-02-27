@@ -12,10 +12,6 @@ using UnityEngine.UI;
 [RequireComponent(typeof(AudioSource))]
 public class Metronome : MonoBehaviour
 {
-    private static Metronome _instance;
-
-    public static Metronome Instance { get { return _instance; } }
-
     //Timer Events based on the beat
     public delegate void Beat();
     public static event Beat OnBeat;
@@ -44,20 +40,6 @@ public class Metronome : MonoBehaviour
     private double sampleRate = 0.0F;
     private int accent;
     private bool running = false;
-
-
-    private void Awake()
-    {
-        if (_instance != null && _instance != this)
-        {
-            Destroy(this.gameObject);
-        }
-        else
-        {
-            _instance = this;
-        }
-    }
-
 
     void Start()
     {

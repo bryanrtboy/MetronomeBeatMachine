@@ -9,7 +9,7 @@ public class Beat : MonoBehaviour
 
 public class PatternSet
 {
-    //public string savedName = "Last";
+    public string soundBank = "Chimes";
     public double tempo = 144;
     public int signatureHi = 4;
     public int measures = 4;
@@ -19,7 +19,7 @@ public class PatternSet
 [System.Serializable]
 public class BeatPattern
 {
-    public GameObject note;
+    //public GameObject note;
     public int m_beatID = 0;
     public List<bool> m_beatPattern = new List<bool>();
 }

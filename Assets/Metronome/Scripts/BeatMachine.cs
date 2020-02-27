@@ -18,38 +18,28 @@ using System.IO;
 [RequireComponent(typeof(Metronome))]
 public class BeatMachine : MonoBehaviour
 {
-    private static BeatMachine _instance;
-
-    public static BeatMachine Instance { get { return _instance; } }
 
     public int m_beatsPerMeasure = 4;
-    public int m_patternCount = 3;
     public int m_measureCount = 4;
 
+    public Metronome m_metronome;
     public PatternSet m_currentPatternSet;
+    public GameObject[] m_soundBankPrefabs;
 
     public int m_currentBeat = 0;
     public string m_saveAs = "settings";
-    public string m_load = "settings";
+    public string m_load = "default";
+    public string m_currentSoundLabel = "Chimes";
 
     public delegate void PatternChange(BeatPattern beatPattern);
     public static event PatternChange OnPatternChange;
 
     #region Initialization Setup the singleton and subscribe to events
-    private void Awake()
-    {
-        if (_instance != null && _instance != this)
-        {
-            Destroy(this.gameObject);
-        }
-        else
-        {
-            _instance = this;
-        }
-    }
+
 
     private void OnEnable()
     {
+        //ClearAllNotesFromScene();
         Metronome.OnBeat += BeatCount;
         Metronome.OnDownBeat += BeatCount;
     }
@@ -66,7 +56,7 @@ public class BeatMachine : MonoBehaviour
     {
         m_currentBeat++;
 
-        if (m_currentBeat >= Metronome.Instance.signatureHi * m_measureCount)
+        if (m_currentBeat >= m_metronome.signatureHi * m_measureCount)
             m_currentBeat = 0;
     }
 
@@ -88,24 +78,33 @@ public class BeatMachine : MonoBehaviour
             return;
         }
 
-        foreach (BeatPattern bp in m_currentPatternSet.patterns)
+        for (int i = 0; i < m_soundBankPrefabs.Length; i++)
         {
-            GameObject note = Instantiate(bp.note, Random.insideUnitSphere + this.transform.position, Quaternion.identity);
-            note.tag = "Player";
-            BeatEmitter b = note.GetComponent<BeatEmitter>();
-            if (b)
+
+            if (m_currentPatternSet.patterns.Count > i)
             {
-                b.m_patternID = bp.m_beatID;
-                b.m_playOnDownBeat = true;
-                b.m_useRandom = false;
+
+                GameObject note = Instantiate(m_soundBankPrefabs[i], Random.insideUnitSphere + this.transform.position, Quaternion.identity);
+                note.tag = "Player";
+
+                BeatEmitter b = note.GetComponent<BeatEmitter>();
+                if (b)
+                {
+                    b.m_patternID = m_currentPatternSet.patterns[i].m_beatID;
+                    b.m_playOnDownBeat = true;
+                    b.m_useRandom = false;
+                }
+
+                DispatchPatterns(m_currentPatternSet.patterns[i]);
             }
-            DispatchPatterns(bp);
+
         }
     }
 
 
     public void ClearAllNotesFromScene()
     {
+
         GameObject[] notes = GameObject.FindGameObjectsWithTag("Player");
 
 #if UNITY_EDITOR
@@ -115,6 +114,8 @@ public class BeatMachine : MonoBehaviour
         foreach (GameObject g in notes)
             Destroy(g);
 #endif
+        m_soundBankPrefabs = null;
+
     }
 
 }

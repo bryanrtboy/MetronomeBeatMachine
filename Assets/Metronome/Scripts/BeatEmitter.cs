@@ -22,6 +22,7 @@ public class BeatEmitter : MonoBehaviour
     public int m_patternID = 0;
 
     List<bool> m_pattern;
+    BeatMachine m_beatMachine;
 
     //Use these strings to call VFX Graph System Properties
     //public string m_beats = "BeatParticles";
@@ -34,6 +35,7 @@ public class BeatEmitter : MonoBehaviour
         m_vfx = this.GetComponentInChildren<ParticleSystem>();
         m_light = this.GetComponentInChildren<Light>();
         m_pattern = new List<bool>();
+        m_beatMachine = FindObjectOfType<BeatMachine>();
     }
 
     private void OnEnable()
@@ -129,7 +131,7 @@ public class BeatEmitter : MonoBehaviour
 
     bool ShallWePlay()
     {
-        bool shouldPlayOnThisBeat = m_pattern[BeatMachine.Instance.m_currentBeat];
+        bool shouldPlayOnThisBeat = m_pattern[m_beatMachine.m_currentBeat];
         return shouldPlayOnThisBeat;
     }
 

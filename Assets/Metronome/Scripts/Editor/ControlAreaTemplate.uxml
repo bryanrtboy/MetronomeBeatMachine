@@ -3,7 +3,9 @@
         <Style src="ControlAreaTemplate.uss" />
         <ui:Button text="Reset" name="Reset" view-data-key="reset" />
         <ui:Button text="Save Preset" name="Save" view-data-key="save" />
-        <ui:TextField picking-mode="Ignore" value="settings" text="settings" name="SaveAs" binding-path="m_saveAs" view-data-key="saveAs" class="label" style="max-width: none; min-width: 175px;" />
-        <ui:Label text="Load Preset" name="Load" class="load-label" />
+        <ui:TextField picking-mode="Ignore" value="settings" text="settings" name="SaveAs" binding-path="m_saveAs" view-data-key="saveAs" tooltip="Saved Settings name (no spaces)" class="label" style="max-width: none; min-width: 175px;" />
+        <ui:Label text="Load Preset" name="Load" tooltip="Right-click to view saved settings" view-data-key="LoadPreset" class="load-label" />
+        <ui:Label text="Load Sound Bank" name="LoadSoundBank" view-data-key="SoundBank" tooltip="Right-click to select a Sound Bank" class="load-label" />
+        <ui:Label text="Chimes" name="CurrentSoundBank" binding-path="m_currentSoundLabel" style="margin-left: 10px; -unity-text-align: middle-left;" />
     </ui:VisualElement>
 </ui:UXML>
