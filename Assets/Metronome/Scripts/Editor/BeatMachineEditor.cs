@@ -31,25 +31,13 @@ public class BeatMachineEditor : Editor
     private VisualTreeAsset _BeatPatternTemplate;
     private VisualTreeAsset _ControlTemplate;
 
-    //private PatternSet m_currentPatternSet;
-
-    private string m_savedDataPath = "";
-    private string[] m_savedFilenames;
-    private string[] m_defaultFilenames;
-
     #region Starting up the interface, getting the metronome and hooking up the callbacks
+
     public void OnEnable()
     {
         //Bindings on the UI elements will target the attached BeatMachine.cs script
         _beatMachine = (BeatMachine)target;
         _beatMachine.m_metronome = _beatMachine.transform.GetComponent<Metronome>();
-
-
-        //Load the presets, if they exist and cache the path to savedData
-        m_savedDataPath = Application.persistentDataPath + "/";
-        m_savedFilenames = GetFileNames(m_savedDataPath);
-        m_defaultFilenames = GetFileNames(Application.streamingAssetsPath + "/DefaultPatternSets/");
-
 
         //Initialize the UI Elements
         _RootElement = new VisualElement();
@@ -60,7 +48,6 @@ public class BeatMachineEditor : Editor
         _ControlElement.name = "ControlsAndButtons";
         _PatternSetElement.name = "PatternSets";
 
-
         //Load the templates
         _BeatMachineTemplate = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Metronome/Scripts/Editor/BeatMachineTemplate.uxml");
         _BeatPatternTemplate = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Metronome/Scripts/Editor/patternTemplate.uxml");
@@ -69,6 +56,8 @@ public class BeatMachineEditor : Editor
         //Load the styles
         StyleSheet stylesheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/Metronome/Scripts/Editor/BeatMachineTemplate.uss");
         _RootElement.styleSheets.Add(stylesheet);
+
+        _beatMachine.UpdateMenus();
 
     }
 
@@ -85,7 +74,7 @@ public class BeatMachineEditor : Editor
         _ControlTemplate.CloneTree(_ControlElement);
 
         LoadPatternSetFromDisc();
-        LoadSoundBankAndSetPatternRows(_beatMachine.m_currentPatternSet.soundBank, _PatternSetElement);
+        // LoadSoundBankAndSetPatternRows(_beatMachine.m_currentPatternSet.soundBank, _PatternSetElement);
         RegisterUICallbacks();
 
         _RootElement.Add(_PatternSetElement);
@@ -122,43 +111,47 @@ public class BeatMachineEditor : Editor
 
             _beatMachine.DispatchPatterns(beatPattern);
         }
-
-
     }
 
 
-    void LoadSoundBankAndSetPatternRows(string soundBankName, VisualElement patternSetContainer)
+    void LoadSoundBankAndSetPatternRows(string soundBankName)
     {
-        patternSetContainer.Clear();
-        _beatMachine.ClearAllNotesFromScene();
-        _beatMachine.m_currentSoundLabel = soundBankName;
+        _PatternSetElement.Clear();
 
-        string path = soundBankName + "/";
+        //Rename the soundbank so that a new set of notes are created, but use the old pattern
+        //_beatMachine.m_currentPatternSet.soundBank = soundBankName;
+        // _beatMachine.m_currentSoundLabel = soundBankName;
+        _beatMachine.GetSoundBankPrefabsFromName(soundBankName);
 
-        GameObject[] prefabs = Resources.LoadAll("SoundBanks/" + soundBankName + "/", typeof(GameObject)).Cast<GameObject>().ToArray();
-
-        _beatMachine.m_currentPatternSet.soundBank = soundBankName;
-        _beatMachine.m_soundBankPrefabs = prefabs;
+        PatternSet newPatternSet = new PatternSet();
+        newPatternSet.soundBank = soundBankName;
+        newPatternSet.patterns = new List<BeatPattern>();
+        newPatternSet.tempo = _beatMachine.m_currentPatternSet.tempo;
+        newPatternSet.signatureHi = _beatMachine.m_currentPatternSet.signatureHi;
+        newPatternSet.measures = _beatMachine.m_currentPatternSet.measures;
 
         //Make a pattern line for each sound
-        for (int i = 0; i < prefabs.Length; i++)
+        for (int patternLine = 0; patternLine < _beatMachine.m_soundBankPrefabs.Length; patternLine++)
         {
             BeatPattern bp = new BeatPattern();
+            bp.m_beatID = patternLine;
+            List<bool> booleans = new List<bool>();
 
-            bool doesCurrentPatternSetHaveBeatPatternAtThisIndexPosition = _beatMachine.m_currentPatternSet.patterns.Count > i;
+            bool doesOldPatternHaveAPatternAtThisLineNumber = _beatMachine.m_currentPatternSet.patterns.Count > patternLine;
+            int oldPatternLength = _beatMachine.m_currentPatternSet.patterns[0].m_beatPattern.Count;
 
-            VisualElement visualElement = new VisualElement();
+            VisualElement patternLineVisualElement = new VisualElement();
 
-            _BeatPatternTemplate.CloneTree(visualElement);
+            _BeatPatternTemplate.CloneTree(patternLineVisualElement);
 
             //Create the label for this beat pattern
-            var label = visualElement.Query<Label>().Class("pattern-id").First();
-            label.text = i.ToString();
+            var label = patternLineVisualElement.Query<Label>().Class("pattern-id").First();
+            label.text = patternLine.ToString();
 
-            visualElement.AddToClassList("pattern-list-container");
+            patternLineVisualElement.AddToClassList("pattern-list-container");
 
             //Name the pattern with the integer - !important
-            visualElement.name = i.ToString();
+            patternLineVisualElement.name = patternLine.ToString();
 
             //Create all of the beat toggles
             for (int b = 0; b < _beatMachine.m_currentPatternSet.measures * _beatMachine.m_currentPatternSet.signatureHi; b++)
@@ -166,8 +159,12 @@ public class BeatMachineEditor : Editor
                 Toggle toggle = new Toggle();
 
                 //resuse the current pattern if it is in range of the newly created pattern (number of measures *  signature)
-                if (doesCurrentPatternSetHaveBeatPatternAtThisIndexPosition && b < _beatMachine.m_currentPatternSet.patterns[i].m_beatPattern.Count)
-                    toggle.value = _beatMachine.m_currentPatternSet.patterns[i].m_beatPattern[b];
+                if (doesOldPatternHaveAPatternAtThisLineNumber)
+                {
+                    if (b < oldPatternLength)
+                        toggle.value = _beatMachine.m_currentPatternSet.patterns[patternLine].m_beatPattern[b];
+
+                }
 
                 toggle.name = bp.m_beatID.ToString() + "beat" + b.ToString();
                 toggle.viewDataKey = toggle.name;
@@ -178,19 +175,28 @@ public class BeatMachineEditor : Editor
                 else
                     toggle.AddToClassList("beat");
 
-                visualElement.Add(toggle);
+                patternLineVisualElement.Add(toggle);
+                booleans.Add(toggle.value);
             }
 
-            Label l = new Label();
-            l.text = prefabs[i].name;
-            visualElement.Add(l);
+            bp.m_beatPattern = booleans;
+            newPatternSet.patterns.Add(bp);
 
-            patternSetContainer.Add(visualElement);
+            Label l = new Label();
+            l.text = _beatMachine.m_soundBankPrefabs[patternLine].name;
+            patternLineVisualElement.Add(l);
+
+            _PatternSetElement.Add(patternLineVisualElement);
+
         }
 
-
-        _beatMachine.MakeNoteGameObjects();
         //OnPatternChangeUpdateNotesWithNewPatterns();
+
+        _beatMachine.m_currentPatternSet = newPatternSet;
+        _beatMachine.MakeNoteGameObjects();
+        _beatMachine.UpdateMenus();
+
+
 
     }
 
@@ -230,11 +236,11 @@ public class BeatMachineEditor : Editor
         if (save != null)
             save.clickable.clicked += () => SavePatternSetToDisc();
 
-        UpdateLoadSavedMenu();
-        UpdateLoadSoundBankMenu();
+        SetupLoadSavedMenu();
+        SetupSoundBankMenu();
     }
 
-    void UpdateLoadSavedMenu()
+    void SetupLoadSavedMenu()
     {
         //Setup the dropdown menu
         ContextualMenuManipulator m = new ContextualMenuManipulator(BuildSavedPatternMenu);
@@ -245,7 +251,7 @@ public class BeatMachineEditor : Editor
             label.AddManipulator(m);
     }
 
-    void UpdateLoadSoundBankMenu()
+    void SetupSoundBankMenu()
     {
         //Setup the dropdown menu
         ContextualMenuManipulator loadSoundBanksMenu = new ContextualMenuManipulator(BuildSoundBankMenu);
@@ -263,23 +269,22 @@ public class BeatMachineEditor : Editor
         _beatMachine.m_metronome.signatureHi = _beatMachine.m_beatsPerMeasure;
         _beatMachine.m_currentPatternSet.measures = _beatMachine.m_measureCount;
 
-        LoadSoundBankAndSetPatternRows(_beatMachine.m_currentPatternSet.soundBank, _PatternSetElement);
+        LoadSoundBankAndSetPatternRows(_beatMachine.m_currentPatternSet.soundBank);
         OnPatternChangeUpdateNotesWithNewPatterns();
     }
 
     void HandlePatternChanges(MouseUpEvent mouseUp)
     {
         _beatMachine.m_beatsPerMeasure = _beatMachine.m_metronome.signatureHi;
-        //LoadSoundBankAndSetPatternRows(_beatMachine.m_currentSoundBank, _PatternSetElement);
         OnPatternChangeUpdateNotesWithNewPatterns();
     }
 
     void BuildSavedPatternMenu(ContextualMenuPopulateEvent evt)
     {
-        foreach (string s in m_savedFilenames)
+        foreach (string s in _beatMachine.m_savedFilenames)
             evt.menu.AppendAction(s, OnLoadPresetFromMenuSelection, DropdownMenuAction.AlwaysEnabled);
 
-        foreach (string s in m_defaultFilenames)
+        foreach (string s in _beatMachine.m_defaultFilenames)
             evt.menu.AppendAction(s, OnLoadPresetFromMenuSelection, DropdownMenuAction.AlwaysEnabled);
     }
 
@@ -293,7 +298,7 @@ public class BeatMachineEditor : Editor
             return;
         }
 
-        string[] soundBanks = GetFolderNames(path);
+        string[] soundBanks = _beatMachine.GetFolderNames(path);
 
         foreach (string s in soundBanks)
             evt.menu.AppendAction(s, OnLoadSoundBankFromMenuSelection, DropdownMenuAction.AlwaysEnabled);
@@ -302,9 +307,7 @@ public class BeatMachineEditor : Editor
 
     void OnLoadSoundBankFromMenuSelection(DropdownMenuAction action)
     {
-        _beatMachine.m_currentPatternSet.soundBank = action.name;
-
-        LoadSoundBankAndSetPatternRows(_beatMachine.m_currentPatternSet.soundBank, _PatternSetElement);
+        LoadSoundBankAndSetPatternRows(action.name);
     }
 
 
@@ -314,7 +317,6 @@ public class BeatMachineEditor : Editor
         _beatMachine.m_saveAs = action.name;
 
         LoadPatternSetFromDisc();
-        //LoadSoundBankAndSetPatternRows(_beatMachine.m_currentPatternSet.soundBank, _PatternSetElement);
     }
 
     #endregion
@@ -325,93 +327,20 @@ public class BeatMachineEditor : Editor
     {
         List<BeatPattern> patterns = GetCurrentPatterns(_PatternSetElement, "pattern-list-container");
 
-        PatternSet toSave = new PatternSet();
-        toSave.patterns = new List<BeatPattern>();
-        toSave.tempo = _beatMachine.m_metronome.bpm;
-        toSave.signatureHi = _beatMachine.m_metronome.signatureHi;
-        toSave.measures = _beatMachine.m_measureCount;
-        toSave.soundBank = _beatMachine.m_currentPatternSet.soundBank;
+        _beatMachine.SavePatternSetToDisc(patterns);
 
-        foreach (BeatPattern bp in patterns)
-            toSave.patterns.Add(bp);
-
-        //string savedPatterns = EditorJsonUtility.ToJson(toSave);
-        string savedPatterns = JsonUtility.ToJson(toSave);
-
-        File.WriteAllText(m_savedDataPath + _beatMachine.m_saveAs + ".json", savedPatterns);
-
-        //Refresh the files directory
-        m_savedFilenames = GetFileNames(m_savedDataPath);
     }
 
     void LoadPatternSetFromDisc()
     {
-        string path = m_savedDataPath + _beatMachine.m_load + ".json";
+        _beatMachine.LoadPatternSetFromDisc();
 
-        //Try to Use the default patterns if there are no saved patterns
-        if (!File.Exists(path))
-        {
-            string newPath = Application.streamingAssetsPath + "/DefaultPatternSets/" + _beatMachine.m_load + ".json";
-
-
-            if (!File.Exists(newPath))
-            {
-                Debug.LogError("There are no saved patternsets and I can't find any default patterns to use!");
-                return;
-            }
-            else
-            {
-                path = newPath;
-            }
-        }
-
-        string settings = File.ReadAllText(path);
-        _beatMachine.m_currentPatternSet = JsonUtility.FromJson<PatternSet>(settings);
-
-        //_beatMachine.ClearAllNotesFromScene();
-        LoadSoundBankAndSetPatternRows(_beatMachine.m_currentPatternSet.soundBank, _PatternSetElement);
-        //_beatMachine.MakeNoteGameObjects();
+        LoadSoundBankAndSetPatternRows(_beatMachine.m_currentPatternSet.soundBank);
 
     }
     #endregion
 
     #region Utility Methods for getting patterns and loading filenames for Soundbanks
-
-    string[] GetFileNames(string path)
-    {
-        string[] array = Directory.GetFiles(path);
-
-        List<string> names = new List<string>();
-
-        for (int i = 0; i < array.Length; i++)
-        {
-            string name = Path.GetFileName(array[i]);
-
-            if (!name.EndsWith(".meta"))
-            {
-                name = name.Substring(0, name.Length - 5);
-                if (name != ".DS_")
-                    names.Add(name);
-            }
-        }
-
-        return names.ToArray();
-    }
-
-    string[] GetFolderNames(string path)
-    {
-        string[] parentDirectory = Directory.GetDirectories(path);
-        List<string> directories = new List<string>();
-
-        foreach (var directory in parentDirectory)
-        {
-            DirectoryInfo dirInfo = new DirectoryInfo(directory);
-
-            string name = dirInfo.Name;
-            directories.Add(name);
-        }
-        return directories.ToArray();
-    }
 
     List<BeatPattern> GetCurrentPatterns(VisualElement elementToQuery, string className)
     {

@@ -19,7 +19,8 @@ public class Metronome : MonoBehaviour
     public delegate void DownBeat();
     public static event DownBeat OnDownBeat;
 
-
+    [HideInInspector]
+    public AudioSource m_audioSource;
     private double downBeatTime = 0;
     private double lastDownBeatTime = 0;
 
@@ -40,6 +41,11 @@ public class Metronome : MonoBehaviour
     private double sampleRate = 0.0F;
     private int accent;
     private bool running = false;
+
+    private void Awake()
+    {
+        m_audioSource = this.GetComponent<AudioSource>();
+    }
 
     void Start()
     {

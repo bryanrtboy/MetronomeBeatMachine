@@ -36,6 +36,7 @@ public class BeatEmitter : MonoBehaviour
         m_light = this.GetComponentInChildren<Light>();
         m_pattern = new List<bool>();
         m_beatMachine = FindObjectOfType<BeatMachine>();
+
     }
 
     private void OnEnable()
@@ -72,7 +73,9 @@ public class BeatEmitter : MonoBehaviour
             return;
         }
 
-        AudioSource.PlayClipAtPoint(m_clip, this.transform.position, .5f);
+        BeatMachine.PlayClipAtPoint(m_beatMachine.m_metronome.m_audioSource, m_clip, this.transform.position, .5f);
+        //m_beatMachine.m_metronome.m_audioSource.PlayOneShot(m_clip, .5f);
+        //AudioSource.PlayClipAtPoint(m_clip, this.transform.position, .5f);
 
         m_vfx.Emit(100);
 
@@ -94,7 +97,9 @@ public class BeatEmitter : MonoBehaviour
         if (m_pattern.Count > 0 && !ShallWePlay())
             return;
 
-        AudioSource.PlayClipAtPoint(m_clip, this.transform.position, 1f);
+        BeatMachine.PlayClipAtPoint(m_beatMachine.m_metronome.m_audioSource, m_clip, this.transform.position, .5f);
+        //m_beatMachine.m_metronome.m_audioSource.PlayOneShot(m_clip, 1f);
+        //AudioSource.PlayClipAtPoint(m_clip, this.transform.position, 1f);
         m_vfx.Emit(1000);
 
         //m_vfx.SetInt(m_downbeat, 3000);
@@ -131,6 +136,12 @@ public class BeatEmitter : MonoBehaviour
 
     bool ShallWePlay()
     {
+        if (m_beatMachine.m_currentBeat >= m_pattern.Count)
+        {
+            Debug.Log("beat pattern is smaller than current beat count!");
+            return false;
+        }
+
         bool shouldPlayOnThisBeat = m_pattern[m_beatMachine.m_currentBeat];
         return shouldPlayOnThisBeat;
     }
