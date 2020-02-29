@@ -133,7 +133,7 @@ GameObject:
   - component: {fileID: 1206606162}
   - component: {fileID: 1206606161}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: Metronome
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -151,6 +151,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d8aec0ac09db4cdbaa802d9fbcb974e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_audioSource: {fileID: 0}
   bpm: 140
   gain: 0.5
   signatureHi: 4

@@ -9,146 +9,149 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(AudioSource))]
-public class Metronome : MonoBehaviour
+namespace Beats
 {
-    //Timer Events based on the beat
-    public delegate void Beat();
-    public static event Beat OnBeat;
-
-    public delegate void DownBeat();
-    public static event DownBeat OnDownBeat;
-
-    [HideInInspector]
-    public AudioSource m_audioSource;
-    private double downBeatTime = 0;
-    private double lastDownBeatTime = 0;
-
-    private double beatTime = 0;
-    private double lastBeatTime = 0;
-
-    public double bpm = 140.0F;
-    public float gain = 0.5F;
-    public int signatureHi = 4;
-    public int signatureLo = 4;
-    public bool playMetronomeTick = true;
-
-    public Text m_infoPanel;
-
-    private double nextTick = 0.0F;
-    private float amp = 0.0F;
-    private float phase = 0.0F;
-    private double sampleRate = 0.0F;
-    private int accent;
-    private bool running = false;
-
-    private void Awake()
+    [RequireComponent(typeof(AudioSource))]
+    public class Metronome : MonoBehaviour
     {
-        m_audioSource = this.GetComponent<AudioSource>();
-    }
+        //Timer Events based on the beat
+        public delegate void Beat();
+        public static event Beat OnBeat;
 
-    void Start()
-    {
-        accent = signatureHi;
-        double startTick = AudioSettings.dspTime;
-        sampleRate = AudioSettings.outputSampleRate;
-        nextTick = startTick * sampleRate;
-        running = true;
-    }
+        public delegate void DownBeat();
+        public static event DownBeat OnDownBeat;
 
-    private void Update()
-    {
+        [HideInInspector]
+        public AudioSource m_audioSource;
+        private double downBeatTime = 0;
+        private double lastDownBeatTime = 0;
 
-        if (lastBeatTime == beatTime)
+        private double beatTime = 0;
+        private double lastBeatTime = 0;
+
+        public double bpm = 140.0F;
+        public float gain = 0.5F;
+        public int signatureHi = 4;
+        public int signatureLo = 4;
+        public bool playMetronomeTick = true;
+
+        public Text m_infoPanel;
+
+        private double nextTick = 0.0F;
+        private float amp = 0.0F;
+        private float phase = 0.0F;
+        private double sampleRate = 0.0F;
+        private int accent;
+        private bool running = false;
+
+        private void Awake()
         {
-            if (lastDownBeatTime == downBeatTime)
-            {
-                if (OnDownBeat != null)
-                    OnDownBeat();
-            }
-            else
-            {
-                if (OnBeat != null)
-                    OnBeat();
-            }
+            m_audioSource = this.GetComponent<AudioSource>();
         }
 
-        downBeatTime = AudioSettings.dspTime;
-        beatTime = AudioSettings.dspTime;
-    }
-
-    void OnAudioFilterRead(float[] data, int channels)
-    {
-        if (!running)
-            return;
-
-        double samplesPerTick = sampleRate * 60.0F / bpm * 4.0F / signatureLo;
-        double sample = AudioSettings.dspTime * sampleRate;
-
-        int dataLen = data.Length / channels;
-        int n = 0;
-
-        while (n < dataLen)
+        void Start()
         {
-            float x = gain * amp * Mathf.Sin(phase);
-            int i = 0;
-            while (i < channels)
+            accent = signatureHi;
+            double startTick = AudioSettings.dspTime;
+            sampleRate = AudioSettings.outputSampleRate;
+            nextTick = startTick * sampleRate;
+            running = true;
+        }
+
+        private void Update()
+        {
+
+            if (lastBeatTime == beatTime)
             {
-                data[n * channels + i] += x;
-                i++;
-            }
-            while (sample + n >= nextTick)
-            {
-                nextTick += samplesPerTick;
-                if (playMetronomeTick)
-                    amp = 1.0F;
-                if (++accent > signatureHi)
+                if (lastDownBeatTime == downBeatTime)
                 {
-                    accent = 1;
-                    if (playMetronomeTick)
-                        amp *= 2.0F;
-                    lastDownBeatTime = AudioSettings.dspTime;
-
+                    if (OnDownBeat != null)
+                        OnDownBeat();
                 }
-
-                lastBeatTime = AudioSettings.dspTime;
-
-                // Debug.Log("Tick: " + accent + "/" + signatureHi);
+                else
+                {
+                    if (OnBeat != null)
+                        OnBeat();
+                }
             }
-            if (playMetronomeTick)
-            {
-                phase += amp * 0.3F;
-                amp *= 0.993F;
-            }
-            n++;
+
+            downBeatTime = AudioSettings.dspTime;
+            beatTime = AudioSettings.dspTime;
         }
-    }
 
-    public void UpdateBPM(float b)
-    {
-        bpm = b;
-        UpdateInfoPanel();
+        void OnAudioFilterRead(float[] data, int channels)
+        {
+            if (!running)
+                return;
 
-        RotateByBPM[] cubes = FindObjectsOfType<RotateByBPM>();
-        foreach (RotateByBPM c in cubes)
-            c.RPM = (float)bpm;
-    }
+            double samplesPerTick = sampleRate * 60.0F / bpm * 4.0F / signatureLo;
+            double sample = AudioSettings.dspTime * sampleRate;
 
-    public void UpdateHi(float hi)
-    {
-        signatureHi = (int)hi;
-        UpdateInfoPanel();
-    }
+            int dataLen = data.Length / channels;
+            int n = 0;
 
-    public void UpdateLo(float lo)
-    {
-        signatureLo = (int)lo;
-        UpdateInfoPanel();
-    }
+            while (n < dataLen)
+            {
+                float x = gain * amp * Mathf.Sin(phase);
+                int i = 0;
+                while (i < channels)
+                {
+                    data[n * channels + i] += x;
+                    i++;
+                }
+                while (sample + n >= nextTick)
+                {
+                    nextTick += samplesPerTick;
+                    if (playMetronomeTick)
+                        amp = 1.0F;
+                    if (++accent > signatureHi)
+                    {
+                        accent = 1;
+                        if (playMetronomeTick)
+                            amp *= 2.0F;
+                        lastDownBeatTime = AudioSettings.dspTime;
 
-    void UpdateInfoPanel()
-    {
-        if (m_infoPanel)
-            m_infoPanel.text = string.Format("BPM   {0}    {1}/{2}", bpm, signatureHi, signatureLo);
+                    }
+
+                    lastBeatTime = AudioSettings.dspTime;
+
+                    // Debug.Log("Tick: " + accent + "/" + signatureHi);
+                }
+                if (playMetronomeTick)
+                {
+                    phase += amp * 0.3F;
+                    amp *= 0.993F;
+                }
+                n++;
+            }
+        }
+
+        public void UpdateBPM(float b)
+        {
+            bpm = b;
+            UpdateInfoPanel();
+
+            RotateByBPM[] cubes = FindObjectsOfType<RotateByBPM>();
+            foreach (RotateByBPM c in cubes)
+                c.RPM = (float)bpm;
+        }
+
+        public void UpdateHi(float hi)
+        {
+            signatureHi = (int)hi;
+            UpdateInfoPanel();
+        }
+
+        public void UpdateLo(float lo)
+        {
+            signatureLo = (int)lo;
+            UpdateInfoPanel();
+        }
+
+        void UpdateInfoPanel()
+        {
+            if (m_infoPanel)
+                m_infoPanel.text = string.Format("BPM   {0}    {1}/{2}", bpm, signatureHi, signatureLo);
+        }
     }
 }

@@ -3,17 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ButtonName : MonoBehaviour
+namespace Beats
 {
-
-    void Awake()
+    public class ButtonName : MonoBehaviour
     {
-        Text t = this.GetComponentInChildren<Text>();
 
-        if (t)
-            t.text = this.name;
+        void Awake()
+        {
+            Text t = this.GetComponentInChildren<Text>();
 
-        Destroy(this);
+            if (t)
+                t.text = this.name;
+
+            Destroy(this);
+        }
+
     }
-
 }

@@ -151,6 +151,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d8aec0ac09db4cdbaa802d9fbcb974e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_audioSource: {fileID: 0}
   bpm: 120
   gain: 0.5
   signatureHi: 4
@@ -166,7 +167,8 @@ AudioSource:
   m_GameObject: {fileID: 356045}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 24300002, guid: 2bbe15846442f4783b821287982b6d53,
+    type: 2}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 1
   m_Volume: 1
