@@ -60,19 +60,20 @@ namespace Beats
 
         private void Update()
         {
+            bool beatPlayed = false;
 
-            if (lastBeatTime == beatTime)
+            if (lastBeatTime >= beatTime)
             {
-                if (lastDownBeatTime == downBeatTime)
-                {
-                    if (OnDownBeat != null)
-                        OnDownBeat();
-                }
-                else
-                {
-                    if (OnBeat != null)
-                        OnBeat();
-                }
+
+                if (OnBeat != null)
+                    OnBeat();
+                beatPlayed = true;
+            }
+
+            if (!beatPlayed && lastDownBeatTime >= downBeatTime)
+            {
+                if (OnDownBeat != null)
+                    OnDownBeat();
             }
 
             downBeatTime = AudioSettings.dspTime;

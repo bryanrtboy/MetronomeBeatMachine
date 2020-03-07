@@ -1,4 +1,9 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:VisualElement name="PathLocations" view-data-key="Paths" style="flex-direction: row;">
+        <Style src="BeatMachineTemplate.uss" />
+        <ui:TextField picking-mode="Ignore" label="Resource Folder" value="Metronome" text="Metronome" name="ResourceFolder" view-data-key="resourceFolder" tooltip="Parent folder for the Resource folder that contains the SoundBank folder (blank if the Resource Folder is at the root level" binding-path="m_resourceFolderLocation" class="path-locations" style="flex-wrap: wrap; flex-direction: row;" />
+        <ui:TextField picking-mode="Ignore" label="Sound Bank Folder Name" value="SoundBanks" text="SoundBanks" name="SoundBankFolder" view-data-key="soundBankFolder" tooltip="Folder inside a Resources folder where the SoundBanks will be stored (must not be blank!)" binding-path="m_soundbankFolderName" class="path-locations" style="flex-wrap: wrap; flex-direction: row;" />
+    </ui:VisualElement>
     <ui:VisualElement name="SignatureAndMeasures" style="flex-direction: row; flex-wrap: wrap; margin-left: 0; margin-right: 0; margin-top: 10px; margin-bottom: 10px; padding-left: 0;">
         <Style src="BeatMachineTemplate.uss" />
         <uie:IntegerField label="Measures" value="3" name="Count" binding-path="m_measureCount" view-data-key="p2" class="label subheading" />

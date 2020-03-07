@@ -139,7 +139,9 @@ namespace Beats
                 List<bool> booleans = new List<bool>();
 
                 bool doesOldPatternHaveAPatternAtThisLineNumber = _beatMachine.m_currentPatternSet.patterns.Count > patternLine;
-                int oldPatternLength = _beatMachine.m_currentPatternSet.patterns[0].m_beatPattern.Count;
+                int oldPatternLength = 0;
+                if (_beatMachine.m_currentPatternSet.patterns.Count > 0)
+                    oldPatternLength = _beatMachine.m_currentPatternSet.patterns[0].m_beatPattern.Count;
 
                 VisualElement patternLineVisualElement = new VisualElement();
 
@@ -271,7 +273,7 @@ namespace Beats
             _beatMachine.m_currentPatternSet.measures = _beatMachine.m_measureCount;
 
             LoadSoundBankAndSetPatternRows(_beatMachine.m_currentPatternSet.soundBank);
-            OnPatternChangeUpdateNotesWithNewPatterns();
+            //OnPatternChangeUpdateNotesWithNewPatterns();
         }
 
         void HandlePatternChanges(MouseUpEvent mouseUp)
@@ -291,11 +293,17 @@ namespace Beats
 
         void BuildSoundBankMenu(ContextualMenuPopulateEvent evt)
         {
-            string path = Application.dataPath + "/Metronome/Resources/SoundBanks/";
+            string path = Application.dataPath;
+
+            //If the Resources is at the root level, don't add the /
+            if (_beatMachine.m_resourceFolderLocation != "")
+                path += "/";
+
+            path += _beatMachine.m_resourceFolderLocation + "/Resources/" + _beatMachine.m_soundbankFolderName + "/";
 
             if (!Directory.Exists(path))
             {
-                Debug.LogError("Wrong path for SoundBanks! Fix it before this will work");
+                Debug.LogError(path + " is the wrong path for SoundBanks! Fix it before this will work");
                 return;
             }
 

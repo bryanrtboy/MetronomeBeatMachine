@@ -23,9 +23,9 @@ namespace Beats
         public float m_randomChance = .5f;
         public int m_patternID = 0;
 
-        List<bool> m_pattern;
-        BeatMachine m_beatMachine;
-        Metronome m_metronome;
+        public List<bool> m_pattern;
+        public BeatMachine m_beatMachine;
+        public Metronome m_metronome;
 
         //Use these strings to call VFX Graph System Properties
         //public string m_beats = "BeatParticles";
@@ -33,7 +33,7 @@ namespace Beats
 
         Light m_light;
 
-        private void Awake()
+        public virtual void Awake()
         {
             m_vfx = this.GetComponentInChildren<ParticleSystem>();
             m_light = this.GetComponentInChildren<Light>();
@@ -43,7 +43,7 @@ namespace Beats
 
         }
 
-        private void OnEnable()
+        public virtual void OnEnable()
         {
             Metronome.OnBeat += Beat;
             Metronome.OnDownBeat += DownBeat;
@@ -52,20 +52,20 @@ namespace Beats
             StartCoroutine(ResetBurst());
         }
 
-        private void OnDisable()
+        public virtual void OnDisable()
         {
             Metronome.OnBeat -= Beat;
             Metronome.OnDownBeat -= DownBeat;
             BeatMachine.OnPatternChange -= UpdatePattern;
         }
 
-        private void Update()
+        public virtual void Update()
         {
             if (m_light != null && m_light.intensity > 0.01f)
                 m_light.intensity = Mathf.Lerp(m_light.intensity, 0, Time.deltaTime * 20f);
         }
 
-        void Beat()
+        public virtual void Beat()
         {
             //If we are using randomness, do stuff here
             if (m_useRandom && Random.Range(0.0f, 1.0f) > m_randomChance)
@@ -90,7 +90,7 @@ namespace Beats
 
         }
 
-        void DownBeat()
+        public virtual void DownBeat()
         {
             if (!m_playOnDownBeat)
                 return;
@@ -130,7 +130,7 @@ namespace Beats
             m_light.color = _color;
         }
 
-        void UpdatePattern(BeatPattern bp)
+        public void UpdatePattern(BeatPattern bp)
         {
             if (bp.m_beatID == m_patternID)
             {
@@ -138,11 +138,11 @@ namespace Beats
             }
         }
 
-        bool ShallWePlay()
+        public bool ShallWePlay()
         {
             if (m_beatMachine != null && m_beatMachine.m_currentBeat >= m_pattern.Count)
             {
-                Debug.Log("beat pattern is smaller than current beat count!");
+                //Debug.Log("beat pattern is smaller than current beat count!");
                 return false;
             }
 

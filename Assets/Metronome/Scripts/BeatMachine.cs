@@ -29,6 +29,8 @@ namespace Beats
         public PatternSet m_currentPatternSet;
         public GameObject[] m_soundBankPrefabs;
 
+        public string m_resourceFolderLocation = "Metronome";
+        public string m_soundbankFolderName = "SoundBanks";
         public string[] m_savedFilenames;
         public string[] m_defaultFilenames;
 
@@ -94,6 +96,7 @@ namespace Beats
             {
                 GameObject note = Instantiate(m_soundBankPrefabs[i], Random.insideUnitSphere + this.transform.position, Quaternion.identity);
                 note.tag = "Player";
+                note.name = m_currentPatternSet.soundBank + " " + i.ToString();
 
                 BeatEmitter b = note.GetComponent<BeatEmitter>();
                 if (b)
@@ -132,7 +135,7 @@ namespace Beats
             m_currentSoundLabel = soundBankName;
             string path = soundBankName + "/";
 
-            m_soundBankPrefabs = Resources.LoadAll("SoundBanks/" + path + "/", typeof(GameObject)).Cast<GameObject>().ToArray();
+            m_soundBankPrefabs = Resources.LoadAll(m_soundbankFolderName + "/" + path + "/", typeof(GameObject)).Cast<GameObject>().ToArray();
         }
 
 

@@ -7,66 +7,66 @@ namespace Beats
     [RequireComponent(typeof(Collider))]
     public class MoveOnMouseDown : MonoBehaviour
     {
-        //public float m_cameraPlaneOffset = 1f;
         public Color m_touchedColor = Color.red;
         public string m_colorName = "_BaseColor";
 
-        private Collider m_collider;
-        private bool m_isGrabbed = false;
-        private Camera cam;
-        float zOffset = 1;
+        [Tooltip("The layers that can be hit, set to None if you are not using a plane to set your object on")]
+        public LayerMask hitLayers;
+
         Color m_originalColor;
-        public MeshRenderer m_material;
+        MeshRenderer m_material;
+        Collider m_collider;
+
+        Vector3 screenPosition;
+        Vector3 offset;
 
         private void Awake()
         {
-            m_collider = this.GetComponent<Collider>();
-            cam = Camera.main;
-
             m_material = this.GetComponentInChildren<MeshRenderer>();
             m_originalColor = m_material.material.GetColor(m_colorName);
+            m_collider = this.GetComponent<Collider>();
 
-            //ScreenDrawing s = FindObjectOfType<ScreenDrawing>();
-            //if (s)
-            //    m_cameraPlaneOffset = s.m_zOffset;
         }
 
-
-        void OnDisable()
+        private void OnMouseDrag()
         {
-            m_collider.enabled = false;
-        }
+            Vector3 mouse = Input.mousePosition;
+            Ray castPoint = Camera.main.ScreenPointToRay(mouse);
+            RaycastHit hit;
 
-
-        void Update()
-        {
-            if (m_isGrabbed)
+            if (Physics.Raycast(castPoint, out hit, 5f, hitLayers))
             {
+                this.transform.position = hit.point;
+            }
+            else
+            {
+                //track mouse position.
+                Vector3 currentScreenSpace = new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenPosition.z);
 
-                Vector2 mousePos = new Vector2();
+                //convert screen position to world position with offset changes.
+                Vector3 currentPosition = Camera.main.ScreenToWorldPoint(currentScreenSpace) + offset;
 
-                mousePos.x = Input.mousePosition.x;
-                mousePos.y = Input.mousePosition.y;
-
-                this.transform.position = cam.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y, zOffset));
-                //this.transform.position = Camera.main.ScreenToViewportPoint(Input.mousePosition);
-
+                this.transform.position = currentPosition;
             }
 
         }
 
         void OnMouseDown()
         {
-            m_isGrabbed = true;
-            zOffset = Vector3.Distance(cam.transform.position, this.transform.position);
-            m_material.material.SetColor(m_colorName, m_touchedColor);
+            m_collider.enabled = false;
+            //Convert world position to screen position.
+            screenPosition = Camera.main.WorldToScreenPoint(this.transform.position);
 
+            offset = this.transform.position - Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenPosition.z));
+
+            m_material.material.SetColor(m_colorName, m_touchedColor);
         }
 
         private void OnMouseUp()
         {
-            m_isGrabbed = false;
+            m_collider.enabled = true;
             m_material.material.SetColor(m_colorName, m_originalColor);
+
         }
     }
 
