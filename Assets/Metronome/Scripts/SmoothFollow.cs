@@ -13,6 +13,7 @@ namespace Beats
         public float m_height = 5.0f;
         public float m_rotationDamping = .1f;
         public float m_heightDamping = .2f;
+        public bool m_useResetTargetToZero = true;
 
         Vector3 m_newTargetPosition = Vector3.zero;
         float m_newDistanceGoal;
@@ -32,11 +33,16 @@ namespace Beats
             if (!m_target)
                 return;
 
-            if (Vector3.Distance(m_target.position, m_newTargetPosition) > .1f)
+            if (m_currentLookObject != null)
+                m_newTargetPosition = m_currentLookObject.transform.position;
+
+            if (Vector3.Distance(m_target.position, m_newTargetPosition) > .001f)
                 m_target.position = Vector3.Lerp(m_target.position, m_newTargetPosition, Time.deltaTime);
 
             if (!Mathf.Approximately(m_distance, m_newDistanceGoal))
                 m_distance = Mathf.Lerp(m_distance, m_newDistanceGoal, Time.deltaTime);
+
+
 
         }
 
@@ -77,7 +83,13 @@ namespace Beats
         public void RemoveTarget()
         {
             m_currentLookObject = null;
-            StartCoroutine(FindAndAverageTargets());
+            if (m_useResetTargetToZero)
+                m_newTargetPosition = Vector3.zero;
+            else
+                StartCoroutine(FindAndAverageTargets());
+
+
+            m_newDistanceGoal = m_startDistance;
 
         }
 
@@ -93,7 +105,6 @@ namespace Beats
 
         IEnumerator FindAndAverageTargets()
         {
-            m_newDistanceGoal = m_startDistance;
             yield return new WaitForEndOfFrame();
             m_newTargetPosition = GetAveragePosition();
 
@@ -102,17 +113,24 @@ namespace Beats
         public Vector3 GetAveragePosition()
         {
             Vector3 pos = Vector3.zero;
-            LookAtMe[] targetGroup = FindObjectsOfType<LookAtMe>();
+            List<GameObject> objects = new List<GameObject>();
 
-            if (targetGroup == null)
+            LookAtMe[] targetGroup = FindObjectsOfType<LookAtMe>();
+            GameObject[] gameObjects = GameObject.FindGameObjectsWithTag("GameController");
+
+            foreach (LookAtMe l in targetGroup)
+                objects.Add(l.gameObject);
+
+            foreach (GameObject g in gameObjects)
+                objects.Add(g);
+
+            if (objects.Count < 1)
                 return pos;
 
-            for (int i = 0; i < targetGroup.Length; i++)
-            {
-                pos += targetGroup[i].transform.position;
-            }
+            foreach (GameObject g in objects)
+                pos += g.transform.position;
 
-            pos /= targetGroup.Length;
+            pos /= objects.Count;
             return pos;
         }
     }

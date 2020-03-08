@@ -42,13 +42,21 @@ namespace Beats
         public delegate void PatternChange(BeatPattern beatPattern);
         public static event PatternChange OnPatternChange;
 
-        private void OnEnable()
+        private void Awake()
         {
             ClearAllNotesFromScene();
             LoadPatternSetFromDisc();
             UpdateMenus();
             GetSoundBankPrefabsFromName(m_currentSoundLabel);
-            MakeNoteGameObjects();
+        }
+
+        private void OnEnable()
+        {
+
+            //LoadPatternSetFromDisc();
+            //UpdateMenus();
+            //GetSoundBankPrefabsFromName(m_currentSoundLabel);
+            //MakeNoteGameObjects();
 
             Metronome.OnBeat += BeatCount;
             Metronome.OnDownBeat += BeatCount;
@@ -84,7 +92,12 @@ namespace Beats
                 OnPatternChange(bp);
         }
 
-        public void MakeNoteGameObjects()
+        public void MakeNotes()
+        {
+            MakeNoteGameObjects(Vector3.zero);
+        }
+
+        public void MakeNoteGameObjects(Vector3 origin)
         {
             if (m_currentPatternSet == null || m_currentPatternSet.patterns.Count < 1)
             {
@@ -92,9 +105,12 @@ namespace Beats
                 return;
             }
 
+            if (m_soundBankPrefabs == null)
+                return;
+
             for (int i = 0; i < m_soundBankPrefabs.Length; i++)
             {
-                GameObject note = Instantiate(m_soundBankPrefabs[i], Random.insideUnitSphere + this.transform.position, Quaternion.identity);
+                GameObject note = Instantiate(m_soundBankPrefabs[i], Random.insideUnitSphere + origin, Quaternion.identity);
                 note.tag = "Player";
                 note.name = m_currentPatternSet.soundBank + " " + i.ToString();
 
@@ -164,6 +180,7 @@ namespace Beats
 
         public void LoadPatternSetFromDisc()
         {
+
             string path = Application.persistentDataPath + "/" + m_load + ".json";
 
             //Try to Use the default patterns if there are no saved patterns
@@ -184,6 +201,8 @@ namespace Beats
 
             string settings = File.ReadAllText(path);
             m_currentPatternSet = JsonUtility.FromJson<PatternSet>(settings);
+
+            GetSoundBankPrefabsFromName(m_currentPatternSet.soundBank);
         }
 
         public string[] GetFileNames(string path)

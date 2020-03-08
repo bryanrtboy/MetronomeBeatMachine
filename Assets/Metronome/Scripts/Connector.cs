@@ -39,7 +39,10 @@ namespace Beats
         {
             this.transform.LookAt(m_node.transform);
 
-            this.transform.Translate(Vector3.forward * (3f * this.transform.localScale.z), Space.Self);
+            float dist = Mathf.Lerp(3.5f, 0, m_note._volume);
+            //Debug.Log(this.transform.parent.name + " " + this.transform.name + " is at " + dist.ToString("F4"));
+
+            this.transform.Translate(Vector3.forward * (dist * this.transform.localScale.z), Space.Self);
         }
 
         private void Update()

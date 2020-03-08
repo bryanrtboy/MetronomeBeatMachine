@@ -196,7 +196,7 @@ namespace Beats
             //OnPatternChangeUpdateNotesWithNewPatterns();
 
             _beatMachine.m_currentPatternSet = newPatternSet;
-            _beatMachine.MakeNoteGameObjects();
+            _beatMachine.MakeNoteGameObjects(Vector3.zero);
             _beatMachine.UpdateMenus();
 
 

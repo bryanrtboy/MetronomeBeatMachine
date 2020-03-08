@@ -34,7 +34,7 @@ namespace Beats
             Ray castPoint = Camera.main.ScreenPointToRay(mouse);
             RaycastHit hit;
 
-            if (Physics.Raycast(castPoint, out hit, 5f, hitLayers))
+            if (Physics.Raycast(castPoint, out hit, Mathf.Infinity, hitLayers))
             {
                 this.transform.position = hit.point;
             }
