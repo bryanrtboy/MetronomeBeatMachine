@@ -10,12 +10,17 @@ namespace Beats
         public BeatMachine m_beatMachine;
         public Dropdown m_dropdown;
         List<Dropdown.OptionData> m_optionDatas;
+        Button b;
 
         // Start is called before the first frame update
         void Start()
         {
 
             m_dropdown.ClearOptions();
+
+
+            //Grab the button if it's a sibling
+            b = m_dropdown.gameObject.transform.parent.GetComponentInChildren<Button>();
 
             m_optionDatas = new List<Dropdown.OptionData>();
 
@@ -34,6 +39,7 @@ namespace Beats
             }
 
             m_dropdown.AddOptions(m_optionDatas);
+            m_dropdown.value = 1;
         }
 
         public void DropdownChangeCallback(int item)

@@ -58,7 +58,8 @@ namespace Beats
             StyleSheet stylesheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/Metronome/Scripts/Editor/BeatMachineTemplate.uss");
             _RootElement.styleSheets.Add(stylesheet);
 
-            _beatMachine.UpdateMenus();
+            //_beatMachine.ClearAllNotesFromScene();
+            //_beatMachine.UpdateMenus();
 
         }
 
@@ -75,7 +76,7 @@ namespace Beats
             _ControlTemplate.CloneTree(_ControlElement);
 
             LoadPatternSetFromDisc();
-            // LoadSoundBankAndSetPatternRows(_beatMachine.m_currentPatternSet.soundBank, _PatternSetElement);
+            //LoadSoundBankAndSetPatternRows(_beatMachine.m_currentPatternSet.soundBank, _PatternSetElement);
             RegisterUICallbacks();
 
             _RootElement.Add(_PatternSetElement);
@@ -90,6 +91,7 @@ namespace Beats
 
         void OnPatternChangeUpdateNotesWithNewPatterns()
         {
+
             //Poll the UI for pattern containers
             var patternToggleContainers = _PatternSetElement.Query<VisualElement>().Class("pattern-list-container").ToList();
 
@@ -110,6 +112,7 @@ namespace Beats
                 beatPattern.m_beatID = System.Convert.ToInt32(ve.name);
                 beatPattern.m_beatPattern = beatToggleValues;
 
+
                 _beatMachine.DispatchPatterns(beatPattern);
             }
         }
@@ -117,11 +120,10 @@ namespace Beats
 
         void LoadSoundBankAndSetPatternRows(string soundBankName)
         {
+
             _PatternSetElement.Clear();
 
             //Rename the soundbank so that a new set of notes are created, but use the old pattern
-            //_beatMachine.m_currentPatternSet.soundBank = soundBankName;
-            // _beatMachine.m_currentSoundLabel = soundBankName;
             _beatMachine.GetSoundBankPrefabsFromName(soundBankName);
 
             PatternSet newPatternSet = new PatternSet();
@@ -193,7 +195,7 @@ namespace Beats
 
             }
 
-            //OnPatternChangeUpdateNotesWithNewPatterns();
+            OnPatternChangeUpdateNotesWithNewPatterns();
 
             _beatMachine.m_currentPatternSet = newPatternSet;
             _beatMachine.MakeNoteGameObjects(Vector3.zero);
@@ -273,7 +275,7 @@ namespace Beats
             _beatMachine.m_currentPatternSet.measures = _beatMachine.m_measureCount;
 
             LoadSoundBankAndSetPatternRows(_beatMachine.m_currentPatternSet.soundBank);
-            //OnPatternChangeUpdateNotesWithNewPatterns();
+            OnPatternChangeUpdateNotesWithNewPatterns();
         }
 
         void HandlePatternChanges(MouseUpEvent mouseUp)
@@ -326,6 +328,7 @@ namespace Beats
             _beatMachine.m_saveAs = action.name;
 
             LoadPatternSetFromDisc();
+
         }
 
         #endregion

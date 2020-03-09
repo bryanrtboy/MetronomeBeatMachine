@@ -12,7 +12,6 @@ using UnityEngine;
 
 namespace Beats
 {
-    [RequireComponent(typeof(ParticleSystem))]
     public class BeatEmitter : MonoBehaviour
     {
         public ParticleSystem m_vfx;
@@ -78,10 +77,9 @@ namespace Beats
             }
 
             AudioClipMaker.PlayClipAtPoint(m_metronome.m_audioSource, m_clip, this.transform.position, .5f);
-            //m_beatMachine.m_metronome.m_audioSource.PlayOneShot(m_clip, .5f);
-            //AudioSource.PlayClipAtPoint(m_clip, this.transform.position, .5f);
 
-            m_vfx.Emit(100);
+            if (m_vfx)
+                m_vfx.Emit(100);
 
             //m_vfx.SetInt(m_downbeat, 300);
             //StartCoroutine(ResetBurst());
@@ -102,9 +100,10 @@ namespace Beats
                 return;
 
             AudioClipMaker.PlayClipAtPoint(m_metronome.m_audioSource, m_clip, this.transform.position, .5f);
-            //m_beatMachine.m_metronome.m_audioSource.PlayOneShot(m_clip, 1f);
-            //AudioSource.PlayClipAtPoint(m_clip, this.transform.position, 1f);
-            m_vfx.Emit(1000);
+
+
+            if (m_vfx)
+                m_vfx.Emit(1000);
 
             //m_vfx.SetInt(m_downbeat, 3000);
             //StartCoroutine(ResetBurst());

@@ -8,10 +8,10 @@ namespace Beats
     {
         public Color m_beatColor = Color.white;
         public Color m_downBeatColor = Color.red;
-        public float m_disconnectDistance = .35f;
+        public float m_disconnectDistance = .25f;
+        public Renderer m_nodeRenderer;
 
-        Vector3 m_startScale = Vector3.one;
-        Renderer m_renderer;
+
         Color m_materialColor = Color.black;
         string m_colorToChange = "_EmissionColor";
         [Tooltip("Use this area to set up the Node and Node values. Setting the volume at 0 will move the node away from the parent so it is not connected at launch. A higher value will connnect it and play at launch.")]
@@ -21,12 +21,15 @@ namespace Beats
         public override void Awake()
         {
             m_pattern = new List<bool>();
+
             m_beatMachine = FindObjectOfType<BeatMachine>();
             m_metronome = FindObjectOfType<Metronome>();
-            m_startScale = this.transform.localScale;
-            m_renderer = this.GetComponent<Renderer>();
-            m_materialColor = m_renderer.material.GetColor(m_colorToChange);
-            m_renderer.material.EnableKeyword("_EMISSION");
+
+            if (m_nodeRenderer == null)
+                m_nodeRenderer = this.GetComponentInChildren<Renderer>();
+
+            m_materialColor = m_nodeRenderer.material.GetColor(m_colorToChange);
+            m_nodeRenderer.material.EnableKeyword("_EMISSION");
 
         }
 
@@ -37,6 +40,7 @@ namespace Beats
             BeatMachine.OnPatternChange += UpdatePattern;
 
             Invoke("SetUpConnnectedNotes", .1f);
+            //SetUpConnnectedNotes();
         }
 
         public override void OnDisable()
@@ -50,10 +54,10 @@ namespace Beats
         {
             this.transform.LookAt(Camera.main.transform.position);
 
-            Color c = m_renderer.material.GetColor(m_colorToChange);
+            Color c = m_nodeRenderer.material.GetColor(m_colorToChange);
 
             if (c != m_materialColor)
-                m_renderer.material.SetColor(m_colorToChange, Color.Lerp(c, m_materialColor, Time.deltaTime * 20));
+                m_nodeRenderer.material.SetColor(m_colorToChange, Color.Lerp(c, m_materialColor, Time.deltaTime * 20));
 
         }
 
@@ -78,15 +82,15 @@ namespace Beats
             foreach (Note cn in m_connectedNotes)
             {
                 //Checking the sqrMagnitude is fastest distance check, if the actual distance is about 3, the sqrMagnitude is .3
-                cn._connector.m_isConnected = (this.transform.position - cn._connector.transform.position).sqrMagnitude < m_disconnectDistance;
+                cn._connector.m_isConnected = Vector3.Distance(this.transform.position, cn._connector.transform.position) < m_disconnectDistance;
 
                 if (cn._connector.m_isConnected && cn._connector.m_note._clip != null)
-                    cn._connector.PlayTheClip(m_beatColor, m_metronome.m_audioSource);
+                    cn._connector.PlayTheClip(m_beatColor, m_metronome.m_audioSource, cn._volume);
 
 
             }
 
-            m_renderer.material.SetColor(m_colorToChange, m_beatColor);
+            m_nodeRenderer.material.SetColor(m_colorToChange, m_beatColor);
 
         }
 
@@ -100,13 +104,13 @@ namespace Beats
 
             foreach (Note cn in m_connectedNotes)
             {
-                cn._connector.m_isConnected = (this.transform.position - cn._connector.transform.position).sqrMagnitude < .4f;
+                cn._connector.m_isConnected = Vector3.Distance(this.transform.position, cn._connector.transform.position) < m_disconnectDistance;
 
                 if (cn._connector.m_isConnected)
-                    cn._connector.PlayTheClip(m_beatColor, m_metronome.m_audioSource);
+                    cn._connector.PlayTheClip(m_beatColor, m_metronome.m_audioSource, cn._volume * 2);
             }
 
-            m_renderer.material.SetColor(m_colorToChange, m_downBeatColor);
+            m_nodeRenderer.material.SetColor(m_colorToChange, m_downBeatColor);
 
         }
     }

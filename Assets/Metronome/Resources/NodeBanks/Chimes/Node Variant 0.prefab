@@ -7,10 +7,15 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2355602358450069307, guid: c430de7fa16bf4ff69f247eeba3ee14a,
+        type: 3}
+      propertyPath: m_connectedNotes.Array.data[0]._volume
+      value: 0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 2551781703310900094, guid: c430de7fa16bf4ff69f247eeba3ee14a,
         type: 3}
       propertyPath: m_Name
-      value: Node
+      value: Node Variant 0
       objectReference: {fileID: 0}
     - target: {fileID: 6308468664668736514, guid: c430de7fa16bf4ff69f247eeba3ee14a,
         type: 3}
@@ -66,6 +71,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6308468664668736514, guid: c430de7fa16bf4ff69f247eeba3ee14a,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6308468664668736514, guid: c430de7fa16bf4ff69f247eeba3ee14a,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6308468664668736514, guid: c430de7fa16bf4ff69f247eeba3ee14a,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c430de7fa16bf4ff69f247eeba3ee14a, type: 3}

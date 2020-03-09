@@ -44,20 +44,13 @@ namespace Beats
 
         private void Awake()
         {
-            ClearAllNotesFromScene();
-            LoadPatternSetFromDisc();
             UpdateMenus();
-            GetSoundBankPrefabsFromName(m_currentSoundLabel);
+            LoadPatternSetFromDisc();
         }
 
         private void OnEnable()
         {
-
-            //LoadPatternSetFromDisc();
-            //UpdateMenus();
-            //GetSoundBankPrefabsFromName(m_currentSoundLabel);
-            //MakeNoteGameObjects();
-
+            ClearAllNotesFromScene();
             Metronome.OnBeat += BeatCount;
             Metronome.OnDownBeat += BeatCount;
         }
@@ -94,7 +87,9 @@ namespace Beats
 
         public void MakeNotes()
         {
-            MakeNoteGameObjects(Vector3.zero);
+
+            // LoadPatternSetFromDisc();
+            MakeNoteGameObjects(this.transform.position);
         }
 
         public void MakeNoteGameObjects(Vector3 origin)
@@ -112,17 +107,19 @@ namespace Beats
             {
                 GameObject note = Instantiate(m_soundBankPrefabs[i], Random.insideUnitSphere + origin, Quaternion.identity);
                 note.tag = "Player";
-                note.name = m_currentPatternSet.soundBank + " " + i.ToString();
+                note.name = m_currentPatternSet.soundBank + " " + i.ToString() + ": " + m_soundBankPrefabs[i].name;
+                note.transform.localScale = Vector3.one;
 
-                BeatEmitter b = note.GetComponent<BeatEmitter>();
-                if (b)
+                BeatEmitter b = note.GetComponentInChildren<BeatEmitter>();
+                if (b != null && m_currentPatternSet.patterns.Count > i)
                 {
                     b.m_patternID = m_currentPatternSet.patterns[i].m_beatID;
                     b.m_playOnDownBeat = true;
                     b.m_useRandom = false;
                 }
 
-                DispatchPatterns(m_currentPatternSet.patterns[i]);
+                if (m_currentPatternSet.patterns.Count > i)
+                    DispatchPatterns(m_currentPatternSet.patterns[i]);
 
             }
         }
@@ -131,14 +128,14 @@ namespace Beats
         public void ClearAllNotesFromScene()
         {
 
-            GameObject[] notes = GameObject.FindGameObjectsWithTag("Player");
+            GameObject[] beatOrNodes = GameObject.FindGameObjectsWithTag("Player");
 
 #if UNITY_EDITOR
-            foreach (GameObject g in notes)
+            foreach (GameObject g in beatOrNodes)
                 DestroyImmediate(g);
 #else
-        foreach (GameObject g in notes)
-            Destroy(g);
+           foreach (GameObject g in beatOrNodes)
+                Destroy(g);
 #endif
             m_soundBankPrefabs = null;
 
@@ -149,9 +146,12 @@ namespace Beats
             ClearAllNotesFromScene();
 
             m_currentSoundLabel = soundBankName;
-            string path = soundBankName + "/";
+            string path = m_soundbankFolderName + "/" + m_currentSoundLabel + "/";
+            //Debug.Log("loading " + path);
 
-            m_soundBankPrefabs = Resources.LoadAll(m_soundbankFolderName + "/" + path + "/", typeof(GameObject)).Cast<GameObject>().ToArray();
+            m_soundBankPrefabs = Resources.LoadAll(path, typeof(GameObject)).Cast<GameObject>().ToArray();
+
+            //Debug.Log("loading from " + path + ", found " + m_soundBankPrefabs.Length + " prefabs");
         }
 
 
@@ -165,6 +165,7 @@ namespace Beats
             toSave.signatureHi = m_metronome.signatureHi;
             toSave.measures = m_measureCount;
             toSave.soundBank = m_currentPatternSet.soundBank;
+            toSave.rootResourceFolder = m_resourceFolderLocation;
 
             foreach (BeatPattern bp in patterns)
                 toSave.patterns.Add(bp);
@@ -182,11 +183,12 @@ namespace Beats
         {
 
             string path = Application.persistentDataPath + "/" + m_load + ".json";
+            //Debug.Log("Trying to load from " + path);
 
             //Try to Use the default patterns if there are no saved patterns
             if (!File.Exists(path))
             {
-                string newPath = Application.streamingAssetsPath + "/DefaultPatternSets/default.json";
+                string newPath = Application.streamingAssetsPath + "/DefaultPatternSets/" + m_load + ".json";
 
                 if (!File.Exists(newPath))
                 {
@@ -198,6 +200,8 @@ namespace Beats
                     path = newPath;
                 }
             }
+
+            //Debug.Log("Reading Json from " + path);
 
             string settings = File.ReadAllText(path);
             m_currentPatternSet = JsonUtility.FromJson<PatternSet>(settings);

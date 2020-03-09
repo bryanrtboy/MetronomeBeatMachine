@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 namespace Beats
 {
@@ -8,30 +9,40 @@ namespace Beats
     public class Connector : MonoBehaviour
     {
         public bool m_isConnected = false;
-        public float m_maxLineWidth = .2f;
+        public float m_maxLineWidth = .1f;
+        public float m_diconnectDistance = .25f;
+        public TMP_Text m_text;
+        LineRenderer m_line;
+        public Renderer m_noteRenderer;
 
-        [HideInInspector]
+        //[HideInInspector]
         public Note m_note; //This gets set at launch time from Node.cs
         Node m_node;
-        Renderer m_renderer;
-        LineRenderer m_line;
+
+
         Color m_materialColor = Color.black;
         string m_colorToChange = "_EmissionColor";
 
         private void Awake()
         {
-            m_node = this.GetComponentInParent<Node>();
+            m_node = this.transform.parent.GetComponentInParent<Node>();
 
             if (m_node == null)
             {
-                Debug.LogError("This script requires that the parent have a Node.cs script attached. Destroying myself now.");
+                Debug.LogError("This script requires:  Node/NodeCenter/Connector . With the Node having a Node.cs script attached. Destroying myself now.");
                 Destroy(this);
             }
+            if (m_noteRenderer == null)
+                m_noteRenderer = this.GetComponentInChildren<Renderer>();
 
-            m_renderer = this.GetComponent<Renderer>();
-            m_materialColor = m_renderer.material.GetColor(m_colorToChange);
-            m_renderer.material.EnableKeyword("_EMISSION");
+            m_materialColor = m_noteRenderer.material.GetColor(m_colorToChange);
+            m_noteRenderer.material.EnableKeyword("_EMISSION");
+
+
             m_line = this.GetComponent<LineRenderer>();
+
+            if (m_text)
+                m_text.gameObject.SetActive(false);
 
         }
 
@@ -39,10 +50,12 @@ namespace Beats
         {
             this.transform.LookAt(m_node.transform);
 
-            float dist = Mathf.Lerp(3.5f, 0, m_note._volume);
-            //Debug.Log(this.transform.parent.name + " " + this.transform.name + " is at " + dist.ToString("F4"));
+            this.transform.localPosition = Vector3.zero;
 
-            this.transform.Translate(Vector3.forward * (dist * this.transform.localScale.z), Space.Self);
+            float dist = Mathf.Lerp(m_diconnectDistance, .1f, m_note._volume);
+            //Debug.Log(this.transform.name + " of " + " should be " + dist.ToString("F4") + " from " + m_node.name);
+
+            this.transform.Translate(Vector3.back * dist);
         }
 
         private void Update()
@@ -61,10 +74,10 @@ namespace Beats
                 m_line.enabled = false;
             }
 
-            Color c = m_renderer.material.GetColor(m_colorToChange);
+            Color c = m_noteRenderer.material.GetColor(m_colorToChange);
 
             if (c != m_materialColor)
-                m_renderer.material.SetColor(m_colorToChange, Color.Lerp(c, m_materialColor, Time.deltaTime * 20));
+                m_noteRenderer.material.SetColor(m_colorToChange, Color.Lerp(c, m_materialColor, Time.deltaTime * 20));
         }
 
         float GetDistance()
@@ -72,23 +85,37 @@ namespace Beats
             return Vector3.Distance(this.transform.position, m_node.transform.position);
         }
 
-        public void PlayTheClip(Color c, AudioSource audioSrc)
+        public void PlayTheClip(Color c, AudioSource audioSrc, float volume)
         {
+            if (!m_isConnected)
+                return;
+
             if (m_note._clip == null)
             {
                 Debug.LogError(this.transform.parent.name + " did not pass an audio clip to " + this.name);
                 return;
             }
-            AudioClipMaker.PlayClipAtPoint(audioSrc, m_note._clip, this.transform.position, m_note._volume);
-            m_renderer.material.SetColor(m_colorToChange, c);
+            AudioClipMaker.PlayClipAtPoint(audioSrc, m_note._clip, this.transform.position, volume);
+            m_noteRenderer.material.SetColor(m_colorToChange, c);
 
         }
 
         void SetLineWidth()
         {
-            m_note._volume = Mathf.InverseLerp(1f, 0f, GetDistance() * 2f);
 
-            float w = Mathf.Lerp(0.001f, m_maxLineWidth, m_note._volume);
+            m_note._volume = Mathf.InverseLerp(m_diconnectDistance, .1f, GetDistance());
+
+            if (m_text != null)
+            {
+                if (!m_text.gameObject.activeSelf)
+                    m_text.gameObject.SetActive(true);
+
+                m_text.transform.LookAt(Camera.main.transform);
+                if (m_note != null && m_note._clip)
+                    m_text.text = m_note._clip.name + "\nvol " + m_note._volume.ToString("F2");
+            }
+
+            float w = Mathf.Lerp(0f, m_maxLineWidth, m_note._volume);
             //Debug.Log(w);
 
             m_line.SetPosition(0, m_node.transform.position);

@@ -7,10 +7,25 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2355602358450069307, guid: c430de7fa16bf4ff69f247eeba3ee14a,
+        type: 3}
+      propertyPath: m_connectedNotes.Array.data[0]._clip
+      value: 
+      objectReference: {fileID: 8300000, guid: 7f7b31e0390784a548fc74c00a7f2039, type: 3}
+    - target: {fileID: 2355602358450069307, guid: c430de7fa16bf4ff69f247eeba3ee14a,
+        type: 3}
+      propertyPath: m_connectedNotes.Array.data[1]._clip
+      value: 
+      objectReference: {fileID: 8300000, guid: 7aac379d8826b47959ac4b3a0230a4ab, type: 3}
+    - target: {fileID: 2355602358450069307, guid: c430de7fa16bf4ff69f247eeba3ee14a,
+        type: 3}
+      propertyPath: m_connectedNotes.Array.data[0]._volume
+      value: 0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 2551781703310900094, guid: c430de7fa16bf4ff69f247eeba3ee14a,
         type: 3}
       propertyPath: m_Name
-      value: Node
+      value: Node Variant 1
       objectReference: {fileID: 0}
     - target: {fileID: 6308468664668736514, guid: c430de7fa16bf4ff69f247eeba3ee14a,
         type: 3}

@@ -9,22 +9,25 @@ namespace Beats
 
 
         public Transform m_target;
-        public float m_distance = 10.0f;
+        public float m_zoomOutDistance = 10.0f;
+        public float m_zoomInDistance = .5f;
         public float m_height = 5.0f;
         public float m_rotationDamping = .1f;
         public float m_heightDamping = .2f;
+        [Tooltip("If true, camera always returns to look at (0,0,0), otherwise it will find Look At Me objects and objects tagged Player")]
         public bool m_useResetTargetToZero = true;
 
         Vector3 m_newTargetPosition = Vector3.zero;
         float m_newDistanceGoal;
         float m_startDistance;
 
-        LookAtMe m_currentLookObject;
+        GameObject m_currentLookObject;
+        LookAtMe m_currentLookAtMe;
 
         void Awake()
         {
-            m_startDistance = m_distance;
-            m_newDistanceGoal = m_distance;
+            m_startDistance = m_zoomOutDistance;
+            m_newDistanceGoal = m_zoomOutDistance;
 
         }
 
@@ -39,10 +42,8 @@ namespace Beats
             if (Vector3.Distance(m_target.position, m_newTargetPosition) > .001f)
                 m_target.position = Vector3.Lerp(m_target.position, m_newTargetPosition, Time.deltaTime);
 
-            if (!Mathf.Approximately(m_distance, m_newDistanceGoal))
-                m_distance = Mathf.Lerp(m_distance, m_newDistanceGoal, Time.deltaTime);
-
-
+            if (!Mathf.Approximately(m_zoomOutDistance, m_newDistanceGoal))
+                m_zoomOutDistance = Mathf.Lerp(m_zoomOutDistance, m_newDistanceGoal, Time.deltaTime);
 
         }
 
@@ -71,7 +72,7 @@ namespace Beats
             // Set the position of the camera on the x-z plane to:
             // distance meters behind the target
             transform.position = m_target.position;
-            transform.position -= currentRotation * Vector3.forward * m_distance;
+            transform.position -= currentRotation * Vector3.forward * m_zoomOutDistance;
 
             // Set the height of the camera
             transform.position = new Vector3(transform.position.x, currentHeight, transform.position.z);
@@ -82,7 +83,12 @@ namespace Beats
 
         public void RemoveTarget()
         {
+            if (m_currentLookAtMe)
+                m_currentLookAtMe.ReleaseMe();
+
+            m_currentLookAtMe = null;
             m_currentLookObject = null;
+
             if (m_useResetTargetToZero)
                 m_newTargetPosition = Vector3.zero;
             else
@@ -93,14 +99,15 @@ namespace Beats
 
         }
 
-        public void MakeTarget(Vector3 target, LookAtMe lookAtMe)
+        public void MakeTarget(GameObject target, LookAtMe lookAtMe)
         {
-            if (m_currentLookObject != null)
-                m_currentLookObject.ReleaseMe();
+            if (m_currentLookAtMe)
+                m_currentLookAtMe.ReleaseMe();
 
-            m_currentLookObject = lookAtMe;
-            m_newDistanceGoal = 1f;
-            m_newTargetPosition = target;
+            m_currentLookObject = target;
+            m_newDistanceGoal = m_zoomInDistance;
+            m_newTargetPosition = target.transform.position;
+            m_currentLookAtMe = lookAtMe;
         }
 
         IEnumerator FindAndAverageTargets()

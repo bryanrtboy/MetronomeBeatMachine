@@ -23,9 +23,16 @@ namespace Beats
             if (m_beatMachine)
                 m_beatMachine.MakeNoteGameObjects(this.transform.position + m_rootBuildOffsetPosition);
 
-            GameObject[] gameObjects = GameObject.FindGameObjectsWithTag("Player");
-            foreach (GameObject g in gameObjects)
-                g.transform.parent = this.transform;
+            StartCoroutine(ParentToThis());
+        }
+
+        IEnumerator ParentToThis()
+        {
+            yield return new WaitForEndOfFrame();
+            Node[] nodes = FindObjectsOfType<Node>();
+            foreach (Node n in nodes)
+                n.transform.parent = this.transform;
+
         }
     }
 }
