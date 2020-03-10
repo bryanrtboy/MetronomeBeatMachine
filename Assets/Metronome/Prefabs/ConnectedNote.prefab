@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 4543428495422322823}
   - component: {fileID: 92154120768462983}
   - component: {fileID: 8289595510657882808}
-  m_Layer: 8
+  m_Layer: 31
   m_Name: ConnectedNote
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -84,10 +84,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_touchedColor: {r: 1, g: 0, b: 0, a: 1}
   m_colorName: _Color
-  m_renderers: []
+  m_renderers:
+  - {fileID: 975963303373006283}
   hitLayers:
     serializedVersion: 2
-    m_Bits: 256
+    m_Bits: 2147483648
 --- !u!120 &8289595510657882808
 LineRenderer:
   m_ObjectHideFlags: 0
@@ -196,7 +197,7 @@ GameObject:
   - component: {fileID: 900026594881803200}
   - component: {fileID: 9098756301964356523}
   - component: {fileID: 975963303373006283}
-  m_Layer: 0
+  m_Layer: 31
   m_Name: NoteIndicator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -277,7 +278,7 @@ GameObject:
   - component: {fileID: 3434170795814142934}
   - component: {fileID: 4917676618854525599}
   - component: {fileID: 1824605845718677206}
-  m_Layer: 0
+  m_Layer: 31
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}

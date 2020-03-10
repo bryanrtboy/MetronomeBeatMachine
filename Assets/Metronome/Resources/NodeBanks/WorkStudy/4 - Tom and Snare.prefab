@@ -30,7 +30,7 @@ PrefabInstance:
     - target: {fileID: 2551781703310900094, guid: c430de7fa16bf4ff69f247eeba3ee14a,
         type: 3}
       propertyPath: m_Name
-      value: Node Variant
+      value: 4 - Tom and Snare
       objectReference: {fileID: 0}
     - target: {fileID: 6308468664668736514, guid: c430de7fa16bf4ff69f247eeba3ee14a,
         type: 3}

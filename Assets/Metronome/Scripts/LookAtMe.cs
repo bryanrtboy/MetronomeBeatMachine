@@ -29,8 +29,6 @@ namespace Beats
 
             m_smoothFollow = FindObjectOfType<SmoothFollow>();
 
-            if (m_smoothFollow == null)
-                Destroy(this);
         }
 
         private void OnMouseUp()
@@ -46,7 +44,8 @@ namespace Beats
 
             if (m_isTarget)
             {
-                m_smoothFollow.MakeTarget(m_objectToLookAt, this);
+                if (m_smoothFollow)
+                    m_smoothFollow.MakeTarget(m_objectToLookAt, this);
                 m_spriteRenderer.color = m_touchedColor;
                 if (m_lookToggle)
                     m_lookToggle.ToggleToClickedState();
@@ -54,7 +53,8 @@ namespace Beats
             else
             {
                 m_spriteRenderer.color = m_originalColor;
-                m_smoothFollow.RemoveTarget();
+                if (m_smoothFollow)
+                    m_smoothFollow.RemoveTarget();
                 if (m_lookToggle)
                     m_lookToggle.ToggleToStartState();
             }

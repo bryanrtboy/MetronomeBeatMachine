@@ -33,6 +33,8 @@ namespace Beats
             foreach (Node n in nodes)
                 n.transform.parent = this.transform;
 
+            //m_beatMachine.ActivateNoteGameObjects();
+
         }
     }
 }

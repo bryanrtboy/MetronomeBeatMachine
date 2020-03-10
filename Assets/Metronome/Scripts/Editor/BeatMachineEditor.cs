@@ -58,8 +58,8 @@ namespace Beats
             StyleSheet stylesheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/Metronome/Scripts/Editor/BeatMachineTemplate.uss");
             _RootElement.styleSheets.Add(stylesheet);
 
-            //_beatMachine.ClearAllNotesFromScene();
-            //_beatMachine.UpdateMenus();
+            _beatMachine.ClearAllNotesFromScene();
+            _beatMachine.UpdateMenus();
 
         }
 

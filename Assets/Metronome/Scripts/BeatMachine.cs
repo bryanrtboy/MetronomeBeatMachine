@@ -88,7 +88,7 @@ namespace Beats
         public void MakeNotes()
         {
 
-            // LoadPatternSetFromDisc();
+            //LoadPatternSetFromDisc();
             MakeNoteGameObjects(this.transform.position);
         }
 
@@ -121,9 +121,9 @@ namespace Beats
                 if (m_currentPatternSet.patterns.Count > i)
                     DispatchPatterns(m_currentPatternSet.patterns[i]);
 
+                //m_soundBankPrefabs[i].SetActive(false);
             }
         }
-
 
         public void ClearAllNotesFromScene()
         {
@@ -205,6 +205,8 @@ namespace Beats
 
             string settings = File.ReadAllText(path);
             m_currentPatternSet = JsonUtility.FromJson<PatternSet>(settings);
+
+            //            Debug.Log(m_currentPatternSet.soundBank + " is the current soundbank");
 
             GetSoundBankPrefabsFromName(m_currentPatternSet.soundBank);
         }
