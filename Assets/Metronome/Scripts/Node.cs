@@ -16,7 +16,7 @@ namespace Beats
         string m_colorToChange = "_EmissionColor";
         [Tooltip("Use this area to set up the Node and Node values. Setting the volume at 0 will move the node away from the parent so it is not connected at launch. A higher value will connnect it and play at launch.")]
         public List<Note> m_connectedNotes;
-
+        public List<GameObject> m_orbiters;
 
         public override void Awake()
         {
@@ -30,6 +30,7 @@ namespace Beats
 
             m_materialColor = m_nodeRenderer.material.GetColor(m_colorToChange);
             m_nodeRenderer.material.EnableKeyword("_EMISSION");
+
 
         }
 
@@ -61,12 +62,34 @@ namespace Beats
 
         }
 
+        private void LateUpdate()
+        {
+            for (int i = 0; i < m_orbiters.Count; i++)
+            {
+                float m_radius = Mathf.Lerp(.25f, .1f, m_connectedNotes[i]._volume);
+                float m_speed = Mathf.Lerp(0f, (float)m_metronome.bpm * .02f, m_connectedNotes[i]._volume);
+
+                //if (i % 2 == 0)
+                //    m_orbiters[i].transform.position = new Vector3(this.transform.position.x + Mathf.Cos(Time.time * m_speed * m_radius) * m_radius, this.transform.position.y + Mathf.Sin(Time.time * m_speed * m_radius) * m_radius, this.transform.position.z);
+                //else
+                m_orbiters[i].transform.position = new Vector3(this.transform.position.x + Mathf.Cos(Time.time * m_speed) * m_radius, this.transform.position.y, this.transform.position.z + Mathf.Sin(Time.time * m_speed) * m_radius);
+
+            }
+        }
+
         void SetUpConnnectedNotes()
         {
+            m_orbiters = new List<GameObject>();
+
             foreach (Note cn in m_connectedNotes)
             {
                 cn._connector.m_note = cn;
                 cn._connector.InitialSetup();
+
+                GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                sphere.transform.localScale = new Vector3(.01f, .01f, .01f);
+                sphere.transform.parent = this.transform;
+                m_orbiters.Add(sphere);
             }
 
         }

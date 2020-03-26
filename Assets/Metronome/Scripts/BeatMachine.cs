@@ -53,8 +53,6 @@ namespace Beats
             ClearAllNotesFromScene();
             Metronome.OnBeat += BeatCount;
             Metronome.OnDownBeat += BeatCount;
-
-            Debug.Log(Application.persistentDataPath);
         }
 
         private void OnDisable()

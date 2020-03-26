@@ -80,7 +80,7 @@ namespace Beats
                 m_noteRenderer.material.SetColor(m_colorToChange, Color.Lerp(c, m_materialColor, Time.deltaTime * 20));
         }
 
-        float GetDistance()
+        public float GetDistance()
         {
             return Vector3.Distance(this.transform.position, m_node.transform.position);
         }

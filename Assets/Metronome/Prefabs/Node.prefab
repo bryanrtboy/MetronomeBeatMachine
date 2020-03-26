@@ -463,40 +463,15 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7105247848221589417}
     m_Modifications:
-    - target: {fileID: 92154120768462983, guid: 6ab52b53991b941788a13f45cd9d2d93,
-        type: 3}
-      propertyPath: hitLayers.m_Bits
-      value: 2147483648
-      objectReference: {fileID: 0}
     - target: {fileID: 1790088419733117691, guid: 6ab52b53991b941788a13f45cd9d2d93,
         type: 3}
       propertyPath: m_Name
       value: ConnectedNote
       objectReference: {fileID: 0}
-    - target: {fileID: 1790088419733117691, guid: 6ab52b53991b941788a13f45cd9d2d93,
-        type: 3}
-      propertyPath: m_Layer
-      value: 31
-      objectReference: {fileID: 0}
     - target: {fileID: 3434170795814142934, guid: 6ab52b53991b941788a13f45cd9d2d93,
         type: 3}
       propertyPath: m_Mesh
       value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 4152783373713438294, guid: 6ab52b53991b941788a13f45cd9d2d93,
-        type: 3}
-      propertyPath: m_Positions.Array.data[1].x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4715641749757314421, guid: 6ab52b53991b941788a13f45cd9d2d93,
-        type: 3}
-      propertyPath: m_Layer
-      value: 31
-      objectReference: {fileID: 0}
-    - target: {fileID: 5767791303501194805, guid: 6ab52b53991b941788a13f45cd9d2d93,
-        type: 3}
-      propertyPath: m_Layer
-      value: 31
       objectReference: {fileID: 0}
     - target: {fileID: 6188265154017849734, guid: 6ab52b53991b941788a13f45cd9d2d93,
         type: 3}
@@ -551,11 +526,6 @@ PrefabInstance:
     - target: {fileID: 6188265154017849734, guid: 6ab52b53991b941788a13f45cd9d2d93,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7885351480824202329, guid: 6ab52b53991b941788a13f45cd9d2d93,
-        type: 3}
-      propertyPath: m_Positions.Array.data[1].z
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
