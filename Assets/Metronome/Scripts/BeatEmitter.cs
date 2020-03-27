@@ -15,7 +15,6 @@ namespace Beats
     public class BeatEmitter : MonoBehaviour
     {
         public ParticleSystem m_vfx;
-        public bool m_playOnDownBeat = true;
         public AudioClip m_clip;
         public bool m_useRandom = true;
         [Range(0.01f, .99f)]
@@ -90,8 +89,6 @@ namespace Beats
 
         public virtual void DownBeat()
         {
-            if (!m_playOnDownBeat)
-                return;
 
             if (m_useRandom && Random.Range(0.0f, 1.0f) > m_randomChance)
                 return;
@@ -139,11 +136,14 @@ namespace Beats
 
         public bool ShallWePlay()
         {
-            if (m_beatMachine != null && m_beatMachine.m_currentBeat >= m_pattern.Count)
+            if (m_beatMachine != null && m_beatMachine.m_currentBeat > m_pattern.Count - 1)
             {
-                //Debug.Log("beat pattern is smaller than current beat count!");
+                Debug.Log("beat pattern is smaller than current beat count!");
+                Debug.Log("Current beat is " + m_beatMachine.m_currentBeat + " " + this.name + ": pattern count is " + m_pattern.Count + " for " + m_beatMachine.m_saveAs);
                 return false;
             }
+
+
 
             bool shouldPlayOnThisBeat = m_pattern[m_beatMachine.m_currentBeat];
             return shouldPlayOnThisBeat;

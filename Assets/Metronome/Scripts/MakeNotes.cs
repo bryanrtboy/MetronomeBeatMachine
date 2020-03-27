@@ -44,29 +44,6 @@ namespace Beats
                 b.m_randomChance = Random.Range(.25f, .75f);
         }
 
-        public void RandomizeAllDownBeats()
 
-        {
-            BeatEmitter[] beats = FindObjectsOfType<BeatEmitter>();
-            foreach (BeatEmitter b in beats)
-            {
-                float rand = Random.Range(0.0f, 1.0f);
-                if (rand > .5f)
-                    b.m_playOnDownBeat = true;
-                else
-                    b.m_playOnDownBeat = false;
-            }
-        }
-
-        public void UseAllDownBeats()
-
-        {
-            BeatEmitter[] beats = FindObjectsOfType<BeatEmitter>();
-
-            foreach (BeatEmitter b in beats)
-                b.m_playOnDownBeat = true;
-
-
-        }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
+
 namespace Beats
 {
 
@@ -10,13 +12,15 @@ namespace Beats
         public Color m_downBeatColor = Color.red;
         public float m_disconnectDistance = .25f;
         public Renderer m_nodeRenderer;
+        [Tooltip("Use this area to set up the Node and Node values. Setting the volume at 0 will move the node away from the parent so it is not connected at launch. A higher value will connnect it and play at launch.")]
+        public List<Note> m_connectedNotes;
 
+        public UnityEvent m_onBeat;
+        public UnityEvent m_onDownBeat;
 
         Color m_materialColor = Color.black;
         string m_colorToChange = "_EmissionColor";
-        [Tooltip("Use this area to set up the Node and Node values. Setting the volume at 0 will move the node away from the parent so it is not connected at launch. A higher value will connnect it and play at launch.")]
-        public List<Note> m_connectedNotes;
-        public List<GameObject> m_orbiters;
+        List<GameObject> m_orbiters;
 
         public override void Awake()
         {
@@ -31,7 +35,7 @@ namespace Beats
             m_materialColor = m_nodeRenderer.material.GetColor(m_colorToChange);
             m_nodeRenderer.material.EnableKeyword("_EMISSION");
 
-
+            m_orbiters = new List<GameObject>();
         }
 
         public override void OnEnable()
@@ -64,6 +68,9 @@ namespace Beats
 
         private void LateUpdate()
         {
+            if (m_orbiters.Count == 0)
+                return;
+
             for (int i = 0; i < m_orbiters.Count; i++)
             {
                 float m_radius = Mathf.Lerp(.25f, .1f, m_connectedNotes[i]._volume);
@@ -101,6 +108,7 @@ namespace Beats
             if (m_pattern.Count > 0 && !ShallWePlay())
                 return;
 
+            m_onBeat.Invoke();
 
             foreach (Note cn in m_connectedNotes)
             {
@@ -119,11 +127,11 @@ namespace Beats
 
         public override void DownBeat()
         {
-            if (!m_playOnDownBeat)
-                return;
 
             if (m_pattern.Count > 0 && !ShallWePlay())
                 return;
+
+            m_onDownBeat.Invoke();
 
             foreach (Note cn in m_connectedNotes)
             {

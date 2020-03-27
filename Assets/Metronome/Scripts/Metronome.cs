@@ -36,6 +36,7 @@ namespace Beats
         public bool playMetronomeTick = true;
 
         public Text m_infoPanel;
+        public Slider m_bpmSlider;
 
         private double nextTick = 0.0F;
         private float amp = 0.0F;
@@ -58,22 +59,22 @@ namespace Beats
             running = true;
         }
 
-        private void Update()
+        private void LateUpdate()
         {
-            bool beatPlayed = false;
 
-            if (lastBeatTime >= beatTime)
+
+            if (lastBeatTime == beatTime)
             {
-
-                if (OnBeat != null)
-                    OnBeat();
-                beatPlayed = true;
-            }
-
-            if (!beatPlayed && lastDownBeatTime >= downBeatTime)
-            {
-                if (OnDownBeat != null)
-                    OnDownBeat();
+                if (lastDownBeatTime == downBeatTime)
+                {
+                    if (OnDownBeat != null)
+                        OnDownBeat();
+                }
+                else
+                {
+                    if (OnBeat != null)
+                        OnBeat();
+                }
             }
 
             downBeatTime = AudioSettings.dspTime;
@@ -104,7 +105,8 @@ namespace Beats
                 {
                     nextTick += samplesPerTick;
                     if (playMetronomeTick)
-                        amp = 1.0F;
+                        amp = .5F;
+
                     if (++accent > signatureHi)
                     {
                         accent = 1;
@@ -130,11 +132,17 @@ namespace Beats
         public void UpdateBPM(float b)
         {
             bpm = b;
-            UpdateInfoPanel();
+
+            if (m_bpmSlider != null)
+            {
+                m_bpmSlider.value = b;
+            }
 
             RotateByBPM[] cubes = FindObjectsOfType<RotateByBPM>();
             foreach (RotateByBPM c in cubes)
                 c.RPM = (float)bpm;
+
+            UpdateInfoPanel();
         }
 
         public void UpdateHi(float hi)

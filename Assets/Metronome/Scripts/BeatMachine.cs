@@ -114,7 +114,6 @@ namespace Beats
                 if (b != null && m_currentPatternSet.patterns.Count > i)
                 {
                     b.m_patternID = m_currentPatternSet.patterns[i].m_beatID;
-                    b.m_playOnDownBeat = true;
                     b.m_useRandom = false;
                 }
 
@@ -162,15 +161,19 @@ namespace Beats
             PatternSet toSave = new PatternSet();
             toSave.patterns = new List<BeatPattern>();
             toSave.tempo = m_metronome.bpm;
-            toSave.signatureHi = m_metronome.signatureHi;
+            toSave.signatureHi = m_beatsPerMeasure;
             toSave.measures = m_measureCount;
             toSave.soundBank = m_currentPatternSet.soundBank;
             toSave.rootResourceFolder = m_resourceFolderLocation;
+            toSave.soundBankFolderName = m_soundbankFolderName;
 
             foreach (BeatPattern bp in patterns)
                 toSave.patterns.Add(bp);
 
             string savedPatterns = JsonUtility.ToJson(toSave);
+
+            if (m_saveAs == "default" || m_saveAs == "defaultArp" || m_saveAs == "ChillyChill" || m_saveAs == "defaultNotes")
+                m_saveAs += "_new";
 
             File.WriteAllText(Application.persistentDataPath + "/" + m_saveAs + ".json", savedPatterns);
 
@@ -205,6 +208,14 @@ namespace Beats
 
             string settings = File.ReadAllText(path);
             m_currentPatternSet = JsonUtility.FromJson<PatternSet>(settings);
+            m_saveAs = m_load;
+            m_soundbankFolderName = m_currentPatternSet.soundBankFolderName;
+            m_resourceFolderLocation = m_currentPatternSet.rootResourceFolder;
+            m_beatsPerMeasure = m_currentPatternSet.signatureHi;
+            m_measureCount = m_currentPatternSet.measures;
+            m_metronome.UpdateBPM((float)m_currentPatternSet.tempo);
+            m_metronome.UpdateHi(m_currentPatternSet.signatureHi);
+
 
             //            Debug.Log(m_currentPatternSet.soundBank + " is the current soundbank");
 

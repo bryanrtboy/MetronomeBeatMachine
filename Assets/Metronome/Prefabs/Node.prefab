@@ -124,8 +124,8 @@ MonoBehaviour:
   m_pattern: 
   m_beatMachine: {fileID: 0}
   m_metronome: {fileID: 0}
-  m_beatColor: {r: 1, g: 1, b: 1, a: 1}
-  m_downBeatColor: {r: 1, g: 0, b: 0, a: 1}
+  m_beatColor: {r: 0.4625756, g: 0.64346546, b: 0.990566, a: 1}
+  m_downBeatColor: {r: 1, g: 1, b: 1, a: 1}
   m_disconnectDistance: 0.25
   m_nodeRenderer: {fileID: 1420167310755725875}
   m_connectedNotes:
@@ -135,6 +135,12 @@ MonoBehaviour:
   - _connector: {fileID: 7691758873102175145}
     _clip: {fileID: 8300000, guid: 7f7b31e0390784a548fc74c00a7f2039, type: 3}
     _volume: 0
+  m_onBeat:
+    m_PersistentCalls:
+      m_Calls: []
+  m_onDownBeat:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &3723660059989567908
 GameObject:
   m_ObjectHideFlags: 0

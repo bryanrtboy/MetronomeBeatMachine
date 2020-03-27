@@ -133,6 +133,9 @@ namespace Beats
             newPatternSet.signatureHi = _beatMachine.m_currentPatternSet.signatureHi;
             newPatternSet.measures = _beatMachine.m_currentPatternSet.measures;
 
+            _beatMachine.m_measureCount = _beatMachine.m_currentPatternSet.measures;
+            _beatMachine.m_beatsPerMeasure = _beatMachine.m_currentPatternSet.signatureHi;
+
             //Make a pattern line for each sound
             for (int patternLine = 0; patternLine < _beatMachine.m_soundBankPrefabs.Length; patternLine++)
             {
@@ -159,7 +162,7 @@ namespace Beats
                 patternLineVisualElement.name = patternLine.ToString();
 
                 //Create all of the beat toggles
-                for (int b = 0; b < _beatMachine.m_currentPatternSet.measures * _beatMachine.m_currentPatternSet.signatureHi; b++)
+                for (int b = 0; b < _beatMachine.m_currentPatternSet.measures * _beatMachine.m_metronome.signatureHi; b++)
                 {
                     Toggle toggle = new Toggle();
 
@@ -231,7 +234,7 @@ namespace Beats
             var integerFields = _RootElement.Query<IntegerField>().ToList();
 
             foreach (IntegerField i in integerFields)
-                i.RegisterCallback<KeyUpEvent>(HandlePatternCountChanges);
+                i.RegisterCallback<KeyDownEvent>(HandlePatternCountChanges);
 
             Button reset = _ControlElement.Query<Button>("Reset");
             if (reset != null)
@@ -268,7 +271,7 @@ namespace Beats
         }
 
 
-        void HandlePatternCountChanges(KeyUpEvent keyUpEvent)
+        void HandlePatternCountChanges(KeyDownEvent keyDownEvent)
         {
 
             _beatMachine.m_metronome.signatureHi = _beatMachine.m_beatsPerMeasure;

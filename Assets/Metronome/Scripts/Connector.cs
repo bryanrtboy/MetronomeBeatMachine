@@ -92,7 +92,7 @@ namespace Beats
 
             if (m_note._clip == null)
             {
-                Debug.LogError(this.transform.parent.name + " did not pass an audio clip to " + this.name);
+                Debug.LogWarning(this.transform.parent.name + " did not pass an audio clip to " + this.name);
                 return;
             }
             AudioClipMaker.PlayClipAtPoint(audioSrc, m_note._clip, this.transform.position, volume);

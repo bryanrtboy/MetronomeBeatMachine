@@ -11,8 +11,9 @@ namespace Beats
 
     public class PatternSet
     {
-        public string soundBank = "Chimes";
         public string rootResourceFolder = "Metronome";
+        public string soundBankFolderName = "NodeBanks";
+        public string soundBank = "Chimes";
         public double tempo = 144;
         public int signatureHi = 4;
         public int measures = 4;
