@@ -1,10 +1,13 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
-    <ui:VisualElement name="PathLocations" view-data-key="Paths" style="flex-direction: row;">
+    <uie:FloatField label="Spawn Size" value="0.3" name="Spawnsize" binding-path="m_spawnSize" style="margin-top: 5px;&#10;">
         <Style src="BeatMachineTemplate.uss" />
-        <ui:TextField picking-mode="Ignore" label="Resource Folder" value="Metronome" text="Metronome" name="ResourceFolder" view-data-key="resourceFolder" tooltip="Parent folder for the Resource folder that contains the SoundBank folder (blank if the Resource Folder is at the root level" binding-path="m_resourceFolderLocation" class="path-locations" style="flex-wrap: wrap; flex-direction: row;" />
-        <ui:TextField picking-mode="Ignore" label="Sound Bank Folder Name" value="SoundBanks" text="SoundBanks" name="SoundBankFolder" view-data-key="soundBankFolder" tooltip="Folder inside a Resources folder where the SoundBanks will be stored (must not be blank!)" binding-path="m_soundbankFolderName" class="path-locations" style="flex-wrap: wrap; flex-direction: row;" />
+    </uie:FloatField>
+    <ui:VisualElement name="PathLocations" view-data-key="Paths" style="flex-direction: row;&#10;margin-top: 10px;&#10;border-top-width: 2px;&#10;border-left-color: rgba(48, 47, 47, 255);&#10;border-right-color: rgba(48, 47, 47, 255);&#10;border-top-color: rgba(48, 47, 47, 255);&#10;border-bottom-color: rgba(48, 47, 47, 255);&#10;padding-top: 10px;&#10;">
+        <Style src="BeatMachineTemplate.uss" />
+        <ui:TextField picking-mode="Ignore" label="Resource Folder" value="Metronome" text="Metronome" name="ResourceFolder" view-data-key="resourceFolder" tooltip="Parent folder for the Resource folder that contains the SoundBank folder (blank if the Resource Folder is at the root level" binding-path="m_resourceFolderLocation" class="path-locations" style="flex-wrap: wrap;&#10;flex-direction: row;&#10;" />
+        <ui:TextField picking-mode="Ignore" label="Sound Bank Folder Name" value="SoundBanks" text="SoundBanks" name="SoundBankFolder" view-data-key="soundBankFolder" tooltip="Folder inside a Resources folder where the SoundBanks will be stored (must not be blank!)" binding-path="m_soundbankFolderName" class="path-locations" style="flex-wrap: wrap;&#10;flex-direction: row;&#10;" />
     </ui:VisualElement>
-    <ui:VisualElement name="SignatureAndMeasures" style="flex-direction: row; flex-wrap: wrap; margin-left: 0; margin-right: 0; margin-top: 10px; margin-bottom: 10px; padding-left: 0;">
+    <ui:VisualElement name="SignatureAndMeasures" style="flex-direction: row;&#10;flex-wrap: wrap;&#10;margin-left: 0;&#10;margin-right: 0;&#10;margin-top: 10px;&#10;margin-bottom: 10px;&#10;padding-left: 0;&#10;">
         <Style src="BeatMachineTemplate.uss" />
         <uie:IntegerField label="Measures" value="3" name="Count" binding-path="m_measureCount" view-data-key="p2" class="label subheading" />
         <uie:IntegerField label="Signature HI" value="2" name="BeatsPerMeasure" binding-path="m_beatsPerMeasure" view-data-key="p1" class="label subheading" />

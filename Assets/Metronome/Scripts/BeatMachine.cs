@@ -21,6 +21,7 @@ namespace Beats
     [RequireComponent(typeof(Metronome))]
     public class BeatMachine : MonoBehaviour
     {
+        public float m_spawnSize = .3f;
 
         public int m_beatsPerMeasure = 4;
         public int m_measureCount = 4;
@@ -105,7 +106,7 @@ namespace Beats
 
             for (int i = 0; i < m_soundBankPrefabs.Length; i++)
             {
-                GameObject note = Instantiate(m_soundBankPrefabs[i], Random.insideUnitSphere + origin, Quaternion.identity);
+                GameObject note = Instantiate(m_soundBankPrefabs[i], (Random.insideUnitSphere * m_spawnSize) + origin, Quaternion.identity);
                 note.tag = "Player";
                 note.name = m_currentPatternSet.soundBank + " " + i.ToString() + ": " + m_soundBankPrefabs[i].name;
                 note.transform.localScale = Vector3.one;
@@ -133,7 +134,7 @@ namespace Beats
             foreach (GameObject g in beatOrNodes)
                 DestroyImmediate(g);
 #else
-           foreach (GameObject g in beatOrNodes)
+            foreach (GameObject g in beatOrNodes)
                 Destroy(g);
 #endif
             m_soundBankPrefabs = null;

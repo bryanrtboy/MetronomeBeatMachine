@@ -16,6 +16,8 @@ namespace Beats
     {
         [Tooltip("This should be model that indicates a complete, unopened Node")]
         public GameObject m_nodeIndicator;
+        [Tooltip("If using Animation instead of a GameObject, select it here.")]
+        public Animator m_nodeIndicatorAnimator;
         [Tooltip("Parent that holds all the notes")]
         public GameObject m_noteContainer;
         [Tooltip("Anything else that you want to turn off at the start")]
@@ -58,8 +60,14 @@ namespace Beats
 
         public void ToggleToStartState()
         {
+            if (m_nodeIndicator)
+                m_nodeIndicator.SetActive(true);
 
-            m_nodeIndicator.SetActive(true);
+            if (m_nodeIndicatorAnimator)
+            {
+                m_nodeIndicatorAnimator.SetBool("isUnfolded", false);
+                m_nodeIndicatorAnimator.SetTrigger("Refold");
+            }
 
             foreach (GameObject g in m_objectsToToggle)
                 g.SetActive(false);
@@ -69,7 +77,14 @@ namespace Beats
 
         public void ToggleToClickedState()
         {
-            m_nodeIndicator.SetActive(false);
+            if (m_nodeIndicator)
+                m_nodeIndicator.SetActive(false);
+
+            if (m_nodeIndicatorAnimator)
+            {
+                m_nodeIndicatorAnimator.SetBool("isUnfolded", true);
+                m_nodeIndicatorAnimator.SetTrigger("Unfold");
+            }
 
             foreach (GameObject g in m_objectsToToggle)
                 g.SetActive(true);
